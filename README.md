@@ -122,7 +122,7 @@ index.html (single file)
 | Library | Purpose | CDN |
 |---------|---------|-----|
 | [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) | QR code generation | jsDelivr |
-| [QrScanner](https://github.com/nicmr/qr-scanner) | ZXing-based QR scanning (styled QR support) | unpkg |
+| [QrScanner](https://github.com/nimiq/qr-scanner) | ZXing-based QR scanning (styled QR support) | unpkg |
 | [jsQR](https://github.com/cozmo/jsQR) | Fallback QR code scanning | jsDelivr |
 
 All libraries are loaded from CDNs with graceful fallback — if one fails to load, the application continues working with available engines.
