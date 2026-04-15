@@ -1,0 +1,2415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Create beautiful, customizable QR codes with embedded images, emojis, gradient colors, and multiple dot styles. Scan QR codes from camera or file. Download as PNG or SVG instantly.">
+    <title>QR Code Generator & Scanner</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236c5ce7'/><rect x='15' y='15' width='25' height='25' rx='5' fill='white'/><rect x='60' y='15' width='25' height='25' rx='5' fill='white'/><rect x='15' y='60' width='25' height='25' rx='5' fill='white'/><rect x='20' y='20' width='15' height='15' rx='3' fill='%236c5ce7'/><rect x='65' y='20' width='15' height='15' rx='3' fill='%236c5ce7'/><rect x='20' y='65' width='15' height='15' rx='3' fill='%236c5ce7'/><rect x='60' y='60' width='10' height='10' fill='white'/><rect x='75' y='60' width='10' height='10' fill='white'/><rect x='60' y='75' width='10' height='10' fill='white'/><rect x='75' y='75' width='10' height='10' fill='white'/></svg>">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <script src="https://unpkg.com/@aspect-build/aspect-qr-scanner@1.0.0/dist/aspect-qr-scanner.umd.js" onerror="window._aspectFailed=true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script src="https://unpkg.com/qr-scanner@1.4.2/qr-scanner.umd.min.js" onerror="window._qrScannerFailed=true"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6c5ce7;
+            --primary-dark: #5a4bd1;
+            --bg: #0f0f1a;
+            --card-bg: #1a1a2e;
+            --card-bg2: #16213e;
+            --text: #e0e0e0;
+            --text-muted: #888;
+            --border: #2a2a4a;
+            --accent: #00cec9;
+            --gradient1: linear-gradient(135deg, #6c5ce7, #00cec9);
+            --gradient2: linear-gradient(135deg, #fd79a8, #6c5ce7);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .bg-animation .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .bg-animation .orb:nth-child(1) {
+            width: 400px;
+            height: 400px;
+            background: #6c5ce7;
+            top: -100px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+
+        .bg-animation .orb:nth-child(2) {
+            width: 300px;
+            height: 300px;
+            background: #00cec9;
+            bottom: -50px;
+            right: -50px;
+            animation-delay: -7s;
+        }
+
+        .bg-animation .orb:nth-child(3) {
+            width: 250px;
+            height: 250px;
+            background: #fd79a8;
+            top: 50%;
+            left: 50%;
+            animation-delay: -14s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(100px, -50px) scale(1.1); }
+            50% { transform: translate(-50px, 100px) scale(0.9); }
+            75% { transform: translate(80px, 50px) scale(1.05); }
+        }
+
+        .app-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0 20px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .mode-switcher {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin: 16px 0 24px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 6px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid var(--border);
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .mode-btn:hover { color: var(--text); }
+
+        .mode-btn.active {
+            background: var(--gradient1);
+            color: white;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
+        }
+
+        .mode-content { display: none; }
+        .mode-content.active { display: block; }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        .panel {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 28px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .panel:hover { box-shadow: 0 8px 32px rgba(108, 92, 231, 0.1); }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-title .icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .form-group { margin-bottom: 18px; }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="url"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            outline: none;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+        }
+
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+        }
+
+        .char-count {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .char-count.warning { color: #fdcb6e; }
+        .char-count.danger { color: #ff4757; }
+
+        .color-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .color-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 8px 12px;
+            transition: border-color 0.3s;
+        }
+
+        .color-input-wrapper:focus-within { border-color: var(--primary); }
+
+        .color-input-wrapper input[type="color"] {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: none;
+            padding: 0;
+        }
+
+        .color-input-wrapper input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        .color-input-wrapper input[type="color"]::-webkit-color-swatch {
+            border: 2px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .color-input-wrapper span { font-size: 0.8rem; color: var(--text-muted); }
+
+        .style-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .style-option {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .style-option:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .style-option.active {
+            border-color: var(--primary);
+            background: rgba(108, 92, 231, 0.15);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+        }
+
+        .style-option .style-icon {
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .emoji-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            max-height: 120px;
+            overflow-y: auto;
+            padding: 10px;
+            background: var(--bg);
+            border-radius: 12px;
+            border: 2px solid var(--border);
+        }
+
+        .emoji-grid::-webkit-scrollbar { width: 6px; }
+        .emoji-grid::-webkit-scrollbar-track { background: transparent; }
+        .emoji-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        .emoji-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            background: transparent;
+            transition: all 0.2s;
+        }
+
+        .emoji-btn:hover {
+            background: rgba(108, 92, 231, 0.2);
+            transform: scale(1.15);
+        }
+
+        .emoji-btn.active {
+            border-color: var(--primary);
+            background: rgba(108, 92, 231, 0.2);
+        }
+
+        .image-upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--bg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(108, 92, 231, 0.05);
+        }
+
+        .image-upload-area.has-image {
+            border-style: solid;
+            border-color: var(--accent);
+        }
+
+        .image-upload-area .upload-icon { font-size: 2rem; margin-bottom: 8px; }
+        .image-upload-area .upload-text { font-size: 0.85rem; color: var(--text-muted); }
+
+        .image-upload-area input[type="file"] {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .image-preview {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin: 0 auto 8px;
+            display: block;
+        }
+
+        .embed-toggle {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .embed-toggle-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .embed-toggle-btn:hover { border-color: var(--primary); }
+        .embed-toggle-btn.active {
+            border-color: var(--primary);
+            background: rgba(108, 92, 231, 0.15);
+        }
+
+        .slider-group { margin-bottom: 18px; }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .slider-header label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .slider-value {
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: var(--border);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(108, 92, 231, 0.4);
+            transition: transform 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+        .preview-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .qr-preview-wrapper {
+            position: relative;
+            margin: 20px 0;
+            transition: all 0.5s ease;
+        }
+
+        .qr-preview-container {
+            border-radius: 20px;
+            padding: 24px;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s ease;
+            display: inline-block;
+            overflow: hidden;
+        }
+
+        .qr-preview-container.shape-rounded { border-radius: 30px; }
+        .qr-preview-container.shape-circle { border-radius: 50%; padding: 40px; }
+
+        #qr-output-canvas { display: block; }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            margin-top: 16px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--gradient1);
+            color: white;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.5);
+        }
+
+        .btn-secondary {
+            background: var(--card-bg2);
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: rgba(255, 71, 87, 0.15);
+            color: #ff4757;
+            border: 2px solid rgba(255, 71, 87, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(255, 71, 87, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 206, 201, 0.4);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 206, 201, 0.5);
+        }
+
+        .clear-image-btn {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 6px 14px;
+            font-size: 0.75rem;
+            border-radius: 8px;
+            background: rgba(255, 71, 87, 0.15);
+            color: #ff4757;
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .clear-image-btn:hover { background: rgba(255, 71, 87, 0.25); }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 18px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab:hover { color: var(--text); }
+        .tab.active { background: var(--primary); color: white; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .corner-style-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .corner-option {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .corner-option:hover { border-color: var(--primary); }
+        .corner-option.active {
+            border-color: var(--primary);
+            background: rgba(108, 92, 231, 0.15);
+        }
+
+        .corner-option .preview-shape {
+            width: 24px;
+            height: 24px;
+            margin: 0 auto 6px;
+            border: 3px solid var(--text);
+        }
+
+        .corner-option .preview-shape.square { border-radius: 0; }
+        .corner-option .preview-shape.rounded { border-radius: 6px; }
+        .corner-option .preview-shape.circle { border-radius: 50%; }
+
+        .gradient-presets {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .gradient-preset {
+            height: 36px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .gradient-preset:hover { transform: scale(1.05); }
+        .gradient-preset.active {
+            border-color: white;
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: var(--bg);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-group:hover { background: rgba(108, 92, 231, 0.1); }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .checkbox-group span { font-size: 0.85rem; font-weight: 600; }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--card-bg);
+            color: var(--text);
+            padding: 14px 28px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 0.9rem;
+            z-index: 1000;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        .settings-scroll {
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .settings-scroll::-webkit-scrollbar { width: 6px; }
+        .settings-scroll::-webkit-scrollbar-track { background: transparent; }
+        .settings-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        .error-msg {
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            color: #ff6b81;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            margin-bottom: 14px;
+            display: none;
+        }
+
+        .error-msg.visible { display: block; }
+
+        .size-display {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* ========== SCANNER STYLES ========== */
+        .scanner-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        .scanner-video-wrapper {
+            position: relative;
+            width: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #000;
+            aspect-ratio: 1;
+            max-height: 400px;
+        }
+
+        .scanner-video-wrapper video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .scanner-video-wrapper canvas { display: none; }
+
+        .scanner-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+        }
+
+        .scanner-frame {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 65%; height: 65%;
+            border: 3px solid rgba(108, 92, 231, 0.7);
+            border-radius: 20px;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4);
+        }
+
+        .scanner-frame::before {
+            content: '';
+            position: absolute;
+            top: -3px; left: -3px;
+            right: -3px; bottom: -3px;
+            border: 3px solid transparent;
+            border-radius: 20px;
+            animation: scan-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes scan-pulse {
+            0%, 100% { border-color: rgba(108, 92, 231, 0.3); }
+            50% { border-color: rgba(0, 206, 201, 0.8); }
+        }
+
+        .scan-line {
+            position: absolute;
+            left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            animation: scan-line-move 2s ease-in-out infinite;
+        }
+
+        @keyframes scan-line-move {
+            0% { top: 0; }
+            50% { top: 100%; }
+            100% { top: 0; }
+        }
+
+        .scanner-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            min-height: 300px;
+            color: var(--text-muted);
+            gap: 12px;
+        }
+
+        .scanner-placeholder .placeholder-icon { font-size: 4rem; opacity: 0.5; }
+        .scanner-placeholder .placeholder-text { font-size: 0.9rem; text-align: center; }
+
+        .scanner-status {
+            text-align: center;
+            padding: 10px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 10px;
+        }
+
+        .scanner-status.scanning { color: var(--accent); }
+        .scanner-status.found { color: #00b894; }
+        .scanner-status.error { color: #ff4757; }
+
+        .scan-result-box {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 14px;
+            word-break: break-all;
+            position: relative;
+            transition: border-color 0.3s;
+        }
+
+        .scan-result-box.has-result { border-color: var(--accent); }
+
+        .scan-result-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .scan-result-text {
+            font-size: 0.95rem;
+            color: var(--text);
+            min-height: 24px;
+            line-height: 1.5;
+        }
+
+        .scan-result-text a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .scan-result-text a:hover { text-decoration: underline; }
+
+        .scan-result-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .scan-result-actions .btn { padding: 10px 16px; font-size: 0.8rem; }
+
+        .history-panel { margin-top: 0; }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .history-list::-webkit-scrollbar { width: 6px; }
+        .history-list::-webkit-scrollbar-track { background: transparent; }
+        .history-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        .history-item {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .history-item:hover {
+            border-color: var(--primary);
+            background: rgba(108, 92, 231, 0.05);
+        }
+
+        .history-item-content {
+            font-size: 0.85rem;
+            color: var(--text);
+            word-break: break-all;
+            line-height: 1.4;
+            padding-right: 60px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .history-item-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 6px;
+        }
+
+        .history-item-time { font-size: 0.7rem; color: var(--text-muted); }
+
+        .history-item-type {
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .history-item-type.url {
+            background: rgba(0, 206, 201, 0.15);
+            color: var(--accent);
+        }
+
+        .history-item-type.text {
+            background: rgba(108, 92, 231, 0.15);
+            color: var(--primary);
+        }
+
+        .history-item-delete {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 71, 87, 0.1);
+            color: #ff4757;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.2s;
+        }
+
+        .history-item:hover .history-item-delete { opacity: 1; }
+        .history-item-delete:hover { background: rgba(255, 71, 87, 0.25); }
+
+        .history-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .history-empty .empty-icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.4; }
+        .history-empty .empty-text { font-size: 0.85rem; }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .history-header .panel-title { margin-bottom: 0; }
+
+        .history-clear-btn {
+            padding: 6px 14px;
+            font-size: 0.75rem;
+            border-radius: 8px;
+            background: rgba(255, 71, 87, 0.1);
+            color: #ff4757;
+            border: 1px solid rgba(255, 71, 87, 0.2);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .history-clear-btn:hover { background: rgba(255, 71, 87, 0.2); }
+
+        .file-scan-area {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--bg);
+            position: relative;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .file-scan-area:hover {
+            border-color: var(--primary);
+            background: rgba(108, 92, 231, 0.05);
+        }
+
+        .file-scan-area input[type="file"] {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-scan-area .upload-icon { font-size: 2rem; margin-bottom: 8px; }
+        .file-scan-area .upload-text { font-size: 0.85rem; color: var(--text-muted); }
+
+        .scanner-engine-info {
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+            opacity: 0.7;
+        }
+
+        .scan-processing-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            z-index: 10;
+        }
+
+        .scan-processing-overlay .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-layout, .scanner-layout { grid-template-columns: 1fr; }
+            header h1 { font-size: 1.8rem; }
+            .app-container { padding: 12px; }
+            .panel { padding: 20px; }
+            .style-options { grid-template-columns: repeat(2, 1fr); }
+            .gradient-presets { grid-template-columns: repeat(3, 1fr); }
+            .settings-scroll { max-height: none; }
+        }
+
+        @media (max-width: 480px) {
+            header h1 { font-size: 1.5rem; }
+            .color-row { grid-template-columns: 1fr; }
+            .btn-group { flex-direction: column; }
+            .mode-btn { padding: 10px 16px; font-size: 0.85rem; }
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <div class="app-container">
+        <header>
+            <h1>✨ QR Code Studio</h1>
+            <p>Generate beautiful QR codes or scan them from camera & files</p>
+        </header>
+
+        <div class="mode-switcher">
+            <button class="mode-btn active" data-mode="generate">🎨 Generate</button>
+            <button class="mode-btn" data-mode="scan">📷 Scan</button>
+        </div>
+
+        <!-- ==================== GENERATE MODE ==================== -->
+        <div class="mode-content active" id="mode-generate">
+            <div class="main-layout">
+                <div class="panel">
+                    <div class="settings-scroll">
+                        <div class="panel-title">
+                            <div class="icon" style="background: var(--gradient1);">⚙️</div>
+                            Settings
+                        </div>
+
+                        <div class="error-msg" id="error-msg"></div>
+
+                        <div class="form-group">
+                            <label>Content</label>
+                            <textarea id="qr-text" placeholder="Enter URL, text, or any data..." maxlength="2953">https://example.com</textarea>
+                            <div class="char-count" id="char-count">18 / 2953</div>
+                        </div>
+
+                        <div class="tabs">
+                            <button class="tab active" data-tab="colors">🎨 Colors</button>
+                            <button class="tab" data-tab="style">✏️ Style</button>
+                            <button class="tab" data-tab="embed">🖼️ Embed</button>
+                        </div>
+
+                        <div class="tab-content active" id="tab-colors">
+                            <div class="form-group">
+                                <label>Gradient Presets</label>
+                                <div class="gradient-presets">
+                                    <div class="gradient-preset" style="background: linear-gradient(135deg, #000, #333);" data-fg="#000000" data-bg="#ffffff"></div>
+                                    <div class="gradient-preset" style="background: linear-gradient(135deg, #6c5ce7, #a29bfe);" data-fg="#6c5ce7" data-bg="#ffffff"></div>
+                                    <div class="gradient-preset" style="background: linear-gradient(135deg, #00b894, #00cec9);" data-fg="#00b894" data-bg="#ffffff"></div>
+                                    <div class="gradient-preset" style="background: linear-gradient(135deg, #e17055, #fdcb6e);" data-fg="#e17055" data-bg="#ffffff"></div>
+                                    <div class="gradient-preset" style="background: linear-gradient(135deg, #0984e3, #74b9ff);" data-fg="#0984e3" data-bg="#ffffff"></div>
+                                    <div class="gradient-preset" style="background: linear-gradient(135deg, #d63031, #ff7675);" data-fg="#d63031" data-bg="#ffffff"></div>
+                                    <div class="gradient-preset" style="background: linear-gradient(135deg, #fdcb6e, #ffeaa7);" data-fg="#fdcb6e" data-bg="#2d3436"></div>
+                                    <div class="gradient-preset" style="background: linear-gradient(135deg, #dfe6e9, #b2bec3);" data-fg="#ffffff" data-bg="#2d3436"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Custom Colors</label>
+                                <div class="color-row">
+                                    <div class="color-input-wrapper">
+                                        <input type="color" id="fg-color" value="#000000">
+                                        <span>Foreground</span>
+                                    </div>
+                                    <div class="color-input-wrapper">
+                                        <input type="color" id="bg-color" value="#ffffff">
+                                        <span>Background</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <label class="checkbox-group">
+                                <input type="checkbox" id="use-gradient">
+                                <span>Use gradient foreground</span>
+                            </label>
+
+                            <div id="gradient-colors" class="hidden">
+                                <div class="color-row" style="margin-top: 10px;">
+                                    <div class="color-input-wrapper">
+                                        <input type="color" id="gradient-color1" value="#6c5ce7">
+                                        <span>Start</span>
+                                    </div>
+                                    <div class="color-input-wrapper">
+                                        <input type="color" id="gradient-color2" value="#00cec9">
+                                        <span>End</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-content" id="tab-style">
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <label style="margin: 0;">QR Size</label>
+                                    <span class="slider-value" id="size-value">256px</span>
+                                </div>
+                                <input type="range" id="qr-size" min="128" max="512" value="256" step="16">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Error Correction</label>
+                                <select id="error-correction">
+                                    <option value="L">Low (7%) — more data</option>
+                                    <option value="M" selected>Medium (15%)</option>
+                                    <option value="Q">Quartile (25%)</option>
+                                    <option value="H">High (30%) — best for logos</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Dot Style</label>
+                                <div class="style-options">
+                                    <div class="style-option active" data-dot-style="square">
+                                        <span class="style-icon">⬛</span>
+                                        Square
+                                    </div>
+                                    <div class="style-option" data-dot-style="rounded">
+                                        <span class="style-icon">🔲</span>
+                                        Rounded
+                                    </div>
+                                    <div class="style-option" data-dot-style="dots">
+                                        <span class="style-icon">⚫</span>
+                                        Dots
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Container Shape</label>
+                                <div class="corner-style-grid">
+                                    <div class="corner-option active" data-container="square">
+                                        <div class="preview-shape square"></div>
+                                        Square
+                                    </div>
+                                    <div class="corner-option" data-container="rounded">
+                                        <div class="preview-shape rounded"></div>
+                                        Rounded
+                                    </div>
+                                    <div class="corner-option" data-container="circle">
+                                        <div class="preview-shape circle"></div>
+                                        Circle
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <label style="margin: 0;">Margin</label>
+                                    <span class="slider-value" id="margin-value">4</span>
+                                </div>
+                                <input type="range" id="qr-margin" min="0" max="10" value="4" step="1">
+                            </div>
+                        </div>
+
+                        <div class="tab-content" id="tab-embed">
+                            <div class="embed-toggle">
+                                <button class="embed-toggle-btn active" data-embed="none">None</button>
+                                <button class="embed-toggle-btn" data-embed="emoji">Emoji</button>
+                                <button class="embed-toggle-btn" data-embed="image">Image</button>
+                            </div>
+
+                            <div id="embed-none" class="embed-content">
+                                <p style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 20px;">
+                                    No embedded content. Select emoji or image above.<br><br>
+                                    <em>Tip: Use "High" error correction when embedding logos.</em>
+                                </p>
+                            </div>
+
+                            <div id="embed-emoji" class="embed-content hidden">
+                                <div class="form-group">
+                                    <label>Choose an Emoji</label>
+                                    <div class="emoji-grid" id="emoji-grid"></div>
+                                </div>
+                                <div class="slider-group">
+                                    <div class="slider-header">
+                                        <label style="margin: 0;">Emoji Size</label>
+                                        <span class="slider-value" id="emoji-size-value">40px</span>
+                                    </div>
+                                    <input type="range" id="emoji-size" min="16" max="80" value="40" step="2">
+                                </div>
+                            </div>
+
+                            <div id="embed-image" class="embed-content hidden">
+                                <div class="form-group">
+                                    <label>Upload Image</label>
+                                    <div class="image-upload-area" id="image-upload-area">
+                                        <div id="upload-placeholder">
+                                            <div class="upload-icon">📁</div>
+                                            <div class="upload-text">Click or drag to upload an image</div>
+                                        </div>
+                                        <div id="upload-preview" class="hidden">
+                                            <img class="image-preview" id="preview-img" src="" alt="Preview">
+                                            <div class="upload-text">Image loaded ✓</div>
+                                        </div>
+                                        <input type="file" id="image-input" accept="image/*">
+                                    </div>
+                                    <button class="clear-image-btn hidden" id="clear-image-btn">✕ Remove Image</button>
+                                </div>
+                                <div class="slider-group">
+                                    <div class="slider-header">
+                                        <label style="margin: 0;">Image Size</label>
+                                        <span class="slider-value" id="image-size-value">50px</span>
+                                    </div>
+                                    <input type="range" id="image-size" min="20" max="120" value="50" step="2">
+                                </div>
+                                <label class="checkbox-group">
+                                    <input type="checkbox" id="image-round" checked>
+                                    <span>Round image corners</span>
+                                </label>
+                                <label class="checkbox-group">
+                                    <input type="checkbox" id="image-bg-white" checked>
+                                    <span>White background behind image</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel preview-panel">
+                    <div class="panel-title">
+                        <div class="icon" style="background: var(--gradient2);">👁️</div>
+                        Preview
+                    </div>
+
+                    <div class="qr-preview-wrapper">
+                        <div class="qr-preview-container" id="qr-container">
+                            <canvas id="qr-output-canvas" width="256" height="256"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="size-display" id="size-display">256 × 256 px</div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-primary" id="download-png">📥 PNG</button>
+                        <button class="btn btn-secondary" id="download-svg">📄 SVG</button>
+                        <button class="btn btn-secondary" id="copy-btn">📋 Copy</button>
+                    </div>
+                    <div class="btn-group" style="margin-top: 8px;">
+                        <button class="btn btn-danger" id="reset-btn">🔄 Reset All</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SCAN MODE ==================== -->
+        <div class="mode-content" id="mode-scan">
+            <div class="scanner-layout">
+                <div class="panel">
+                    <div class="panel-title">
+                        <div class="icon" style="background: var(--gradient1);">📷</div>
+                        Scanner
+                    </div>
+
+                    <div class="scanner-video-wrapper" id="scanner-video-wrapper">
+                        <div class="scanner-placeholder" id="scanner-placeholder">
+                            <div class="placeholder-icon">📷</div>
+                            <div class="placeholder-text">Click "Start Camera" to begin scanning<br>or upload a QR code image below</div>
+                        </div>
+                        <video id="scanner-video" playsinline autoplay muted class="hidden"></video>
+                        <canvas id="scanner-canvas"></canvas>
+                        <div class="scanner-overlay hidden" id="scanner-overlay">
+                            <div class="scanner-frame">
+                                <div class="scan-line"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="scanner-status" id="scanner-status">Ready to scan</div>
+                    <div class="scanner-engine-info" id="scanner-engine-info"></div>
+
+                    <div class="btn-group" style="margin-top: 14px;">
+                        <button class="btn btn-success" id="start-camera-btn">📷 Start Camera</button>
+                        <button class="btn btn-danger hidden" id="stop-camera-btn">⏹ Stop Camera</button>
+                    </div>
+
+                    <div class="file-scan-area" id="file-scan-area">
+                        <div class="upload-icon">🖼️</div>
+                        <div class="upload-text">Upload a QR code image to scan</div>
+                        <input type="file" id="scan-file-input" accept="image/*">
+                    </div>
+
+                    <div class="scan-result-box" id="scan-result-box">
+                        <div class="scan-result-label">Scan Result</div>
+                        <div class="scan-result-text" id="scan-result-text">No QR code scanned yet</div>
+                        <div class="scan-result-actions hidden" id="scan-result-actions">
+                            <button class="btn btn-primary" id="scan-copy-btn">📋 Copy</button>
+                            <button class="btn btn-secondary" id="scan-open-btn">🔗 Open</button>
+                            <button class="btn btn-secondary" id="scan-use-btn">✏️ Use in Generator</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel history-panel">
+                    <div class="history-header">
+                        <div class="panel-title">
+                            <div class="icon" style="background: var(--gradient2);">📜</div>
+                            Scan History
+                        </div>
+                        <button class="history-clear-btn hidden" id="history-clear-btn">🗑️ Clear All</button>
+                    </div>
+                    <div class="history-list" id="history-list">
+                        <div class="history-empty" id="history-empty">
+                            <div class="empty-icon">📭</div>
+                            <div class="empty-text">No scans yet.<br>Start scanning to build your history!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">Copied to clipboard!</div>
+
+    <script>
+    (function() {
+        'use strict';
+
+        // ===================== GENERATOR STATE =====================
+        const DEFAULT_STATE = {
+            text: 'https://example.com',
+            fgColor: '#000000',
+            bgColor: '#ffffff',
+            useGradient: false,
+            gradientColor1: '#6c5ce7',
+            gradientColor2: '#00cec9',
+            size: 256,
+            errorCorrection: 'H',
+            dotStyle: 'square',
+            containerShape: 'square',
+            margin: 4,
+            embedType: 'none',
+            selectedEmoji: '',
+            emojiSize: 40,
+            imageData: '',
+            imageSize: 50,
+            imageRound: true,
+            imageBgWhite: true,
+            activeTab: 'colors'
+        };
+
+        let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+        let loadedEmbedImage = null;
+
+        // ===================== SCANNER STATE =====================
+        let scannerStream = null;
+        let scannerAnimFrame = null;
+        let scanHistory = [];
+        const MAX_HISTORY = 10;
+        let qrScannerInstance = null; // for QrScanner library camera mode
+        let activeScanEngine = 'jsQR'; // track which engine is active
+
+        const EMOJIS = [
+            '😀','😎','🥰','🤩','😇','🤖','👻','💀',
+            '❤️','🔥','⭐','🌈','🎉','🎵','💎','🏆',
+            '🚀','🌍','☀️','🌙','🍕','🎮','📱','💻',
+            '🔒','✅','⚡','🎯','🦄','🐱','🐶','🦊',
+            '🌸','🍀','🎨','📸','🎬','🏠','✈️','🎁',
+            '👑','💰','🔔','📌','🧩','🎲','🏅','🌟'
+        ];
+
+        const MAX_BINARY_CAPACITY = { L: 2953, M: 2331, Q: 1663, H: 1273 };
+
+        const $ = id => document.getElementById(id);
+        const $$ = sel => document.querySelectorAll(sel);
+
+        const els = {
+            text: $('qr-text'),
+            charCount: $('char-count'),
+            errorMsg: $('error-msg'),
+            fgColor: $('fg-color'),
+            bgColor: $('bg-color'),
+            useGradient: $('use-gradient'),
+            gradientColors: $('gradient-colors'),
+            gradientColor1: $('gradient-color1'),
+            gradientColor2: $('gradient-color2'),
+            size: $('qr-size'),
+            sizeValue: $('size-value'),
+            errorCorrection: $('error-correction'),
+            margin: $('qr-margin'),
+            marginValue: $('margin-value'),
+            canvas: $('qr-output-canvas'),
+            container: $('qr-container'),
+            sizeDisplay: $('size-display'),
+            emojiGrid: $('emoji-grid'),
+            emojiSize: $('emoji-size'),
+            emojiSizeValue: $('emoji-size-value'),
+            imageInput: $('image-input'),
+            imageSize: $('image-size'),
+            imageSizeValue: $('image-size-value'),
+            imageRound: $('image-round'),
+            imageBgWhite: $('image-bg-white'),
+            previewImg: $('preview-img'),
+            uploadPlaceholder: $('upload-placeholder'),
+            uploadPreview: $('upload-preview'),
+            clearImageBtn: $('clear-image-btn'),
+            imageUploadArea: $('image-upload-area'),
+            toast: $('toast'),
+            scannerVideo: $('scanner-video'),
+            scannerCanvas: $('scanner-canvas'),
+            scannerPlaceholder: $('scanner-placeholder'),
+            scannerOverlay: $('scanner-overlay'),
+            scannerStatus: $('scanner-status'),
+            scannerEngineInfo: $('scanner-engine-info'),
+            startCameraBtn: $('start-camera-btn'),
+            stopCameraBtn: $('stop-camera-btn'),
+            scanFileInput: $('scan-file-input'),
+            scanResultBox: $('scan-result-box'),
+            scanResultText: $('scan-result-text'),
+            scanResultActions: $('scan-result-actions'),
+            scanCopyBtn: $('scan-copy-btn'),
+            scanOpenBtn: $('scan-open-btn'),
+            scanUseBtn: $('scan-use-btn'),
+            historyList: $('history-list'),
+            historyEmpty: $('history-empty'),
+            historyClearBtn: $('history-clear-btn'),
+            scannerVideoWrapper: $('scanner-video-wrapper')
+        };
+
+        // ===================== DETECT AVAILABLE SCANNER ENGINES =====================
+        function hasQrScannerLib() {
+            return typeof QrScanner !== 'undefined' && !window._qrScannerFailed;
+        }
+
+        function hasJsQR() {
+            return typeof jsQR === 'function';
+        }
+
+        function updateEngineInfo(engine) {
+            activeScanEngine = engine;
+            const names = {
+                'qr-scanner': 'QrScanner (ZXing-based — supports styled QR)',
+                'jsQR': 'jsQR (basic)',
+                'multi': 'Multi-engine (QrScanner + jsQR fallback)'
+            };
+            els.scannerEngineInfo.textContent = 'Engine: ' + (names[engine] || engine);
+        }
+
+        // ===================== UTF-8 ENCODING =====================
+        function encodeUTF8(str) {
+            var utf8 = [];
+            for (var i = 0; i < str.length; i++) {
+                var code = str.charCodeAt(i);
+                if (code >= 0xD800 && code <= 0xDBFF) {
+                    var hi = code;
+                    var lo = str.charCodeAt(++i);
+                    code = ((hi - 0xD800) * 0x400) + (lo - 0xDC00) + 0x10000;
+                }
+                if (code < 0x80) utf8.push(code);
+                else if (code < 0x800) { utf8.push(0xC0|(code>>6)); utf8.push(0x80|(code&0x3F)); }
+                else if (code < 0x10000) { utf8.push(0xE0|(code>>12)); utf8.push(0x80|((code>>6)&0x3F)); utf8.push(0x80|(code&0x3F)); }
+                else { utf8.push(0xF0|(code>>18)); utf8.push(0x80|((code>>12)&0x3F)); utf8.push(0x80|((code>>6)&0x3F)); utf8.push(0x80|(code&0x3F)); }
+            }
+            return utf8;
+        }
+
+        // ===================== PERSISTENCE =====================
+        function loadState() {
+            try { const s = localStorage.getItem('qr-gen-pro-state'); if (s) state = { ...DEFAULT_STATE, ...JSON.parse(s) }; } catch(e){}
+        }
+        function saveState() {
+            try { localStorage.setItem('qr-gen-pro-state', JSON.stringify(state)); } catch(e){}
+        }
+        function loadHistory() {
+            try { const s = localStorage.getItem('qr-scan-history'); if (s) scanHistory = JSON.parse(s); } catch(e){}
+        }
+        function saveHistory() {
+            try { localStorage.setItem('qr-scan-history', JSON.stringify(scanHistory)); } catch(e){}
+        }
+
+        // ===================== UI SYNC =====================
+        function applyStateToUI() {
+            els.text.value = state.text;
+            updateCharCount();
+            els.fgColor.value = state.fgColor;
+            els.bgColor.value = state.bgColor;
+            els.useGradient.checked = state.useGradient;
+            els.gradientColors.classList.toggle('hidden', !state.useGradient);
+            els.gradientColor1.value = state.gradientColor1;
+            els.gradientColor2.value = state.gradientColor2;
+            els.size.value = state.size;
+            els.sizeValue.textContent = state.size + 'px';
+            els.errorCorrection.value = state.errorCorrection;
+            els.margin.value = state.margin;
+            els.marginValue.textContent = state.margin;
+            els.emojiSize.value = state.emojiSize;
+            els.emojiSizeValue.textContent = state.emojiSize + 'px';
+            els.imageSize.value = state.imageSize;
+            els.imageSizeValue.textContent = state.imageSize + 'px';
+            els.imageRound.checked = state.imageRound;
+            els.imageBgWhite.checked = state.imageBgWhite;
+            $$('[data-dot-style]').forEach(el => el.classList.toggle('active', el.dataset.dotStyle === state.dotStyle));
+            $$('[data-container]').forEach(el => el.classList.toggle('active', el.dataset.container === state.containerShape));
+            updateContainerShape();
+            $$('[data-embed]').forEach(el => el.classList.toggle('active', el.dataset.embed === state.embedType));
+            updateEmbedVisibility();
+            $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === state.activeTab));
+            $$('.tab-content').forEach(tc => tc.classList.toggle('active', tc.id === 'tab-' + state.activeTab));
+            if (state.imageData) {
+                loadedEmbedImage = new Image();
+                loadedEmbedImage.onload = () => generateQR();
+                loadedEmbedImage.src = state.imageData;
+                els.previewImg.src = state.imageData;
+                els.uploadPlaceholder.classList.add('hidden');
+                els.uploadPreview.classList.remove('hidden');
+                els.clearImageBtn.classList.remove('hidden');
+                els.imageUploadArea.classList.add('has-image');
+            }
+            updateGradientPresetActive();
+        }
+
+        function updateCharCount() {
+            const len = encodeUTF8(state.text).length;
+            const max = MAX_BINARY_CAPACITY[state.errorCorrection] || 2953;
+            els.charCount.textContent = `${len} / ${max} bytes`;
+            els.charCount.className = 'char-count';
+            if (len > max) els.charCount.classList.add('danger');
+            else if (len > max * 0.8) els.charCount.classList.add('warning');
+        }
+
+        function updateContainerShape() {
+            els.container.className = 'qr-preview-container';
+            if (state.containerShape !== 'square') els.container.classList.add('shape-' + state.containerShape);
+        }
+
+        function updateEmbedVisibility() {
+            $$('.embed-content').forEach(ec => ec.classList.add('hidden'));
+            $('embed-' + state.embedType).classList.remove('hidden');
+        }
+
+        function updateGradientPresetActive() {
+            $$('.gradient-preset').forEach(el => el.classList.toggle('active', el.dataset.fg === state.fgColor && el.dataset.bg === state.bgColor));
+        }
+
+        function showError(msg) { els.errorMsg.textContent = msg; els.errorMsg.classList.add('visible'); }
+        function hideError() { els.errorMsg.classList.remove('visible'); }
+        function showToast(msg) {
+            els.toast.textContent = msg; els.toast.classList.add('show');
+            setTimeout(() => els.toast.classList.remove('show'), 2500);
+        }
+
+        // ===================== EMOJI GRID =====================
+        function buildEmojiGrid() {
+            els.emojiGrid.innerHTML = '';
+            EMOJIS.forEach(emoji => {
+                const btn = document.createElement('button');
+                btn.className = 'emoji-btn'; btn.textContent = emoji;
+                if (emoji === state.selectedEmoji) btn.classList.add('active');
+                btn.addEventListener('click', () => {
+                    $$('.emoji-btn').forEach(b => b.classList.remove('active'));
+                    if (state.selectedEmoji === emoji) state.selectedEmoji = '';
+                    else { state.selectedEmoji = emoji; btn.classList.add('active'); }
+                    saveState(); generateQR();
+                });
+                els.emojiGrid.appendChild(btn);
+            });
+        }
+
+        // ===================== QR GENERATION =====================
+        function getBestTypeNumber(utf8Bytes, ecLevel) {
+            for (let t = 1; t <= 40; t++) {
+                try { const qr = qrcode(t, ecLevel); qr.addData(utf8Bytes, 'Byte'); qr.make(); return t; }
+                catch(e) { continue; }
+            }
+            return -1;
+        }
+
+        function generateQR() {
+            hideError();
+            const text = state.text || ' ';
+            const size = state.size;
+            const ecChar = state.errorCorrection;
+            const canvas = els.canvas;
+            const ctx = canvas.getContext('2d');
+            var utf8Bytes = encodeUTF8(text);
+            var byteStr = '';
+            for (var i = 0; i < utf8Bytes.length; i++) byteStr += String.fromCharCode(utf8Bytes[i]);
+            const typeNum = getBestTypeNumber(byteStr, ecChar);
+            if (typeNum < 0) {
+                showError('Text is too long for QR encoding.');
+                canvas.width = size; canvas.height = size;
+                ctx.fillStyle = state.bgColor; ctx.fillRect(0,0,size,size);
+                ctx.fillStyle = '#ff4757'; ctx.font = 'bold 14px sans-serif';
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText('Text too long!', size/2, size/2); return;
+            }
+            let qr;
+            try { qr = qrcode(typeNum, ecChar); qr.addData(byteStr, 'Byte'); qr.make(); }
+            catch(e) { showError('QR generation failed: ' + e.message); return; }
+            const moduleCount = qr.getModuleCount();
+            const marginModules = state.margin;
+            const totalModules = moduleCount + marginModules * 2;
+            const cellSize = size / totalModules;
+            canvas.width = size; canvas.height = size;
+            ctx.fillStyle = state.bgColor; ctx.fillRect(0,0,size,size);
+            let fgStyle;
+            if (state.useGradient) {
+                const grad = ctx.createLinearGradient(0,0,size,size);
+                grad.addColorStop(0, state.gradientColor1); grad.addColorStop(1, state.gradientColor2);
+                fgStyle = grad;
+            } else fgStyle = state.fgColor;
+            let embedRadius = 0;
+            const hasEmbed = (state.embedType==='emoji' && state.selectedEmoji) || (state.embedType==='image' && state.imageData);
+            if (hasEmbed) {
+                const embedPx = state.embedType==='emoji' ? state.emojiSize : state.imageSize;
+                const padPx = state.imageBgWhite || state.embedType==='emoji' ? 8 : 4;
+                embedRadius = (embedPx/2 + padPx) / cellSize;
+            }
+            const centerModule = moduleCount / 2;
+            ctx.fillStyle = fgStyle;
+            for (let row = 0; row < moduleCount; row++) {
+                for (let col = 0; col < moduleCount; col++) {
+                    if (!qr.isDark(row, col)) continue;
+                    if (hasEmbed) {
+                        const dr = row+0.5-centerModule, dc = col+0.5-centerModule;
+                        if (Math.sqrt(dr*dr+dc*dc) < embedRadius) continue;
+                    }
+                    drawModule(ctx, (col+marginModules)*cellSize, (row+marginModules)*cellSize, cellSize, state.dotStyle);
+                }
+            }
+            drawEmbed(ctx, size);
+            els.container.style.backgroundColor = state.bgColor;
+            els.sizeDisplay.textContent = `${size} × ${size} px`;
+        }
+
+        function drawModule(ctx, x, y, s, style) {
+            switch(style) {
+                case 'rounded': {
+                    const r = s*0.35;
+                    ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+s-r,y);
+                    ctx.quadraticCurveTo(x+s,y,x+s,y+r); ctx.lineTo(x+s,y+s-r);
+                    ctx.quadraticCurveTo(x+s,y+s,x+s-r,y+s); ctx.lineTo(x+r,y+s);
+                    ctx.quadraticCurveTo(x,y+s,x,y+s-r); ctx.lineTo(x,y+r);
+                    ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath(); ctx.fill(); break;
+                }
+                case 'dots': { ctx.beginPath(); ctx.arc(x+s/2,y+s/2,s*0.42,0,Math.PI*2); ctx.fill(); break; }
+                default: ctx.fillRect(x,y,s+0.5,s+0.5);
+            }
+        }
+
+        function drawEmbed(ctx, size) {
+            if (state.embedType==='emoji' && state.selectedEmoji) drawEmojiEmbed(ctx, size);
+            else if (state.embedType==='image' && state.imageData && loadedEmbedImage && loadedEmbedImage.complete) drawImageEmbed(ctx, size);
+        }
+
+        function drawEmojiEmbed(ctx, size) {
+            const es=state.emojiSize, pad=8, cx=size/2, cy=size/2;
+            ctx.fillStyle = state.bgColor;
+            ctx.beginPath(); ctx.arc(cx,cy,es/2+pad,0,Math.PI*2); ctx.fill();
+            ctx.font = `${es}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;
+            ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillStyle='#000';
+            ctx.fillText(state.selectedEmoji, cx, cy+2);
+        }
+
+        function drawImageEmbed(ctx, size) {
+            const imgSize=state.imageSize, pad=state.imageBgWhite?8:0;
+            const x=(size-imgSize)/2, y=(size-imgSize)/2, r=state.imageRound?10:0;
+            if (state.imageBgWhite) {
+                ctx.fillStyle = state.bgColor;
+                if (state.imageRound) drawRoundRect(ctx,x-pad,y-pad,imgSize+pad*2,imgSize+pad*2,r+4);
+                else ctx.fillRect(x-pad,y-pad,imgSize+pad*2,imgSize+pad*2);
+            }
+            ctx.save();
+            if (state.imageRound) { ctx.beginPath(); roundRectPath(ctx,x,y,imgSize,imgSize,r); ctx.clip(); }
+            ctx.drawImage(loadedEmbedImage,x,y,imgSize,imgSize); ctx.restore();
+        }
+
+        function drawRoundRect(ctx,x,y,w,h,r) { ctx.beginPath(); roundRectPath(ctx,x,y,w,h,r); ctx.fill(); }
+        function roundRectPath(ctx,x,y,w,h,r) {
+            ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+            ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+            ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+            ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+        }
+
+        // ===================== IMAGE HANDLING =====================
+        function handleImageUpload(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                resizeImage(ev.target.result, 200, (resized) => {
+                    state.imageData = resized;
+                    loadedEmbedImage = new Image();
+                    loadedEmbedImage.onload = () => {
+                        els.previewImg.src = resized;
+                        els.uploadPlaceholder.classList.add('hidden');
+                        els.uploadPreview.classList.remove('hidden');
+                        els.clearImageBtn.classList.remove('hidden');
+                        els.imageUploadArea.classList.add('has-image');
+                        saveState(); generateQR();
+                    };
+                    loadedEmbedImage.src = resized;
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function resizeImage(dataUrl, maxSize, callback) {
+            const img = new Image();
+            img.onload = () => {
+                let w=img.width, h=img.height;
+                if (w>maxSize||h>maxSize) { const s=maxSize/Math.max(w,h); w=Math.round(w*s); h=Math.round(h*s); }
+                const c=document.createElement('canvas'); c.width=w; c.height=h;
+                c.getContext('2d').drawImage(img,0,0,w,h); callback(c.toDataURL('image/png'));
+            };
+            img.src = dataUrl;
+        }
+
+        function clearImage() {
+            state.imageData=''; loadedEmbedImage=null; els.imageInput.value=''; els.previewImg.src='';
+            els.uploadPlaceholder.classList.remove('hidden'); els.uploadPreview.classList.add('hidden');
+            els.clearImageBtn.classList.add('hidden'); els.imageUploadArea.classList.remove('has-image');
+            saveState(); generateQR();
+        }
+
+        // ===================== DOWNLOAD / COPY =====================
+        function downloadPNG() {
+            const link=document.createElement('a'); link.download='qrcode.png';
+            link.href=els.canvas.toDataURL('image/png'); link.click(); showToast('PNG downloaded! 📥');
+        }
+        function downloadSVG() {
+            const size=els.canvas.width;
+            const svg=`<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">\n  <image width="${size}" height="${size}" xlink:href="${els.canvas.toDataURL('image/png')}"/>\n</svg>`;
+            const blob=new Blob([svg],{type:'image/svg+xml'});
+            const link=document.createElement('a'); link.download='qrcode.svg';
+            link.href=URL.createObjectURL(blob); link.click(); URL.revokeObjectURL(link.href);
+            showToast('SVG downloaded! 📄');
+        }
+        async function copyToClipboard() {
+            try {
+                const blob=await new Promise(r=>els.canvas.toBlob(r,'image/png'));
+                await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);
+                showToast('Copied to clipboard! 📋');
+            } catch(e) {
+                try { await navigator.clipboard.writeText(els.canvas.toDataURL('image/png')); showToast('Data URL copied! 📋'); }
+                catch(e2) { showToast('Copy failed ❌'); }
+            }
+        }
+        function resetAll() {
+            state=JSON.parse(JSON.stringify(DEFAULT_STATE)); loadedEmbedImage=null;
+            localStorage.removeItem('qr-gen-pro-state');
+            els.imageInput.value=''; els.previewImg.src='';
+            els.uploadPlaceholder.classList.remove('hidden'); els.uploadPreview.classList.add('hidden');
+            els.clearImageBtn.classList.add('hidden'); els.imageUploadArea.classList.remove('has-image');
+            hideError(); buildEmojiGrid(); applyStateToUI(); generateQR();
+            showToast('Reset to defaults! 🔄');
+        }
+
+        // ===================== MULTI-ENGINE SCANNER =====================
+
+        // Attempt scan with QrScanner library (ZXing-based, much better with styled QR codes)
+        function scanImageWithQrScanner(imgOrBlob) {
+            return new Promise((resolve, reject) => {
+                if (!hasQrScannerLib()) return reject(new Error('QrScanner not available'));
+                QrScanner.scanImage(imgOrBlob, {
+                    returnDetailedScanResult: true,
+                    alsoTryWithoutScanRegion: true
+                }).then(result => {
+                    resolve(result.data || result);
+                }).catch(reject);
+            });
+        }
+
+        // Attempt scan with jsQR
+        function scanImageDataWithJsQR(imageData) {
+            if (!hasJsQR()) return null;
+            const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'attemptBoth' });
+            return code ? code.data : null;
+        }
+
+        // Get ImageData from canvas for jsQR
+        function getImageDataFromCanvas(canvas) {
+            return canvas.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, canvas.width, canvas.height);
+        }
+
+        // Multi-scale scan: try original, then upscaled, then with preprocessing
+        function multiScaleJsQRScan(sourceCanvas) {
+            // Try original
+            let imageData = getImageDataFromCanvas(sourceCanvas);
+            let result = scanImageDataWithJsQR(imageData);
+            if (result) return result;
+
+            // Try upscaled 2x
+            const scales = [2, 3];
+            for (const scale of scales) {
+                const upCanvas = document.createElement('canvas');
+                upCanvas.width = sourceCanvas.width * scale;
+                upCanvas.height = sourceCanvas.height * scale;
+                const upCtx = upCanvas.getContext('2d');
+                upCtx.imageSmoothingEnabled = false;
+                upCtx.drawImage(sourceCanvas, 0, 0, upCanvas.width, upCanvas.height);
+                imageData = upCtx.getImageData(0, 0, upCanvas.width, upCanvas.height);
+                result = scanImageDataWithJsQR(imageData);
+                if (result) return result;
+            }
+
+            // Try with contrast enhancement
+            const enhCanvas = document.createElement('canvas');
+            enhCanvas.width = sourceCanvas.width * 2;
+            enhCanvas.height = sourceCanvas.height * 2;
+            const enhCtx = enhCanvas.getContext('2d');
+            enhCtx.filter = 'contrast(2) grayscale(1)';
+            enhCtx.drawImage(sourceCanvas, 0, 0, enhCanvas.width, enhCanvas.height);
+            imageData = enhCtx.getImageData(0, 0, enhCanvas.width, enhCanvas.height);
+            result = scanImageDataWithJsQR(imageData);
+            if (result) return result;
+
+            // Try with threshold binarization
+            const binCanvas = document.createElement('canvas');
+            binCanvas.width = sourceCanvas.width * 2;
+            binCanvas.height = sourceCanvas.height * 2;
+            const binCtx = binCanvas.getContext('2d');
+            binCtx.drawImage(sourceCanvas, 0, 0, binCanvas.width, binCanvas.height);
+            const binData = binCtx.getImageData(0, 0, binCanvas.width, binCanvas.height);
+            binarizeImageData(binData);
+            result = scanImageDataWithJsQR(binData);
+            return result;
+        }
+
+        function binarizeImageData(imageData) {
+            const d = imageData.data;
+            // Compute average brightness
+            let sum = 0;
+            for (let i = 0; i < d.length; i += 4) {
+                sum += d[i] * 0.299 + d[i+1] * 0.587 + d[i+2] * 0.114;
+            }
+            const avg = sum / (d.length / 4);
+            const threshold = avg * 0.6; // slightly below average
+            for (let i = 0; i < d.length; i += 4) {
+                const gray = d[i] * 0.299 + d[i+1] * 0.587 + d[i+2] * 0.114;
+                const val = gray < threshold ? 0 : 255;
+                d[i] = d[i+1] = d[i+2] = val;
+                d[i+3] = 255;
+            }
+        }
+
+        // ===================== CAMERA SCANNING =====================
+        async function startCamera() {
+            try {
+                // Prefer QrScanner library for camera (uses ZXing under the hood)
+                if (hasQrScannerLib()) {
+                    await startCameraWithQrScanner();
+                } else {
+                    await startCameraWithJsQR();
+                }
+            } catch(e) {
+                els.scannerStatus.textContent = 'Camera access denied or not available';
+                els.scannerStatus.className = 'scanner-status error';
+                showToast('Camera error: ' + e.message);
+            }
+        }
+
+        async function startCameraWithQrScanner() {
+            els.scannerVideo.classList.remove('hidden');
+            els.scannerPlaceholder.classList.add('hidden');
+            els.scannerOverlay.classList.remove('hidden');
+            els.startCameraBtn.classList.add('hidden');
+            els.stopCameraBtn.classList.remove('hidden');
+            els.scannerStatus.textContent = 'Starting camera...';
+            els.scannerStatus.className = 'scanner-status scanning';
+            updateEngineInfo('qr-scanner');
+
+            qrScannerInstance = new QrScanner(
+                els.scannerVideo,
+                result => {
+                    const data = result.data || result;
+                    if (data) {
+                        handleScanResult(data);
+                        els.scannerStatus.textContent = 'QR Code found! ✓';
+                        els.scannerStatus.className = 'scanner-status found';
+                        setTimeout(() => {
+                            if (qrScannerInstance) {
+                                els.scannerStatus.textContent = 'Scanning...';
+                                els.scannerStatus.className = 'scanner-status scanning';
+                            }
+                        }, 2000);
+                    }
+                },
+                {
+                    returnDetailedScanResult: true,
+                    highlightScanRegion: false,
+                    highlightCodeOutline: false,
+                    preferredCamera: 'environment',
+                    maxScansPerSecond: 5
+                }
+            );
+
+            try {
+                await qrScannerInstance.start();
+                els.scannerStatus.textContent = 'Scanning...';
+            } catch(e) {
+                // Fallback to jsQR
+                qrScannerInstance.destroy();
+                qrScannerInstance = null;
+                await startCameraWithJsQR();
+            }
+        }
+
+        async function startCameraWithJsQR() {
+            const constraints = { video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 640 } } };
+            scannerStream = await navigator.mediaDevices.getUserMedia(constraints);
+            els.scannerVideo.srcObject = scannerStream;
+            els.scannerVideo.classList.remove('hidden');
+            els.scannerPlaceholder.classList.add('hidden');
+            els.scannerOverlay.classList.remove('hidden');
+            els.startCameraBtn.classList.add('hidden');
+            els.stopCameraBtn.classList.remove('hidden');
+            els.scannerStatus.textContent = 'Scanning...';
+            els.scannerStatus.className = 'scanner-status scanning';
+            updateEngineInfo('jsQR');
+
+            els.scannerVideo.addEventListener('loadedmetadata', () => {
+                els.scannerCanvas.width = els.scannerVideo.videoWidth;
+                els.scannerCanvas.height = els.scannerVideo.videoHeight;
+                scanFrameJsQR();
+            }, { once: true });
+        }
+
+        function stopCamera() {
+            // Stop QrScanner instance
+            if (qrScannerInstance) {
+                qrScannerInstance.stop();
+                qrScannerInstance.destroy();
+                qrScannerInstance = null;
+            }
+            // Stop manual stream
+            if (scannerAnimFrame) { cancelAnimationFrame(scannerAnimFrame); scannerAnimFrame = null; }
+            if (scannerStream) { scannerStream.getTracks().forEach(t => t.stop()); scannerStream = null; }
+            els.scannerVideo.srcObject = null;
+            els.scannerVideo.classList.add('hidden');
+            els.scannerPlaceholder.classList.remove('hidden');
+            els.scannerOverlay.classList.add('hidden');
+            els.startCameraBtn.classList.remove('hidden');
+            els.stopCameraBtn.classList.add('hidden');
+            els.scannerStatus.textContent = 'Camera stopped';
+            els.scannerStatus.className = 'scanner-status';
+            els.scannerEngineInfo.textContent = '';
+        }
+
+        // jsQR camera frame scanning with multi-scale attempts
+        function scanFrameJsQR() {
+            if (!scannerStream) return;
+            const video = els.scannerVideo;
+            const canvas = els.scannerCanvas;
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                // Try multi-scale scan
+                const result = multiScaleJsQRScan(canvas);
+
+                if (result) {
+                    handleScanResult(result);
+                    els.scannerStatus.textContent = 'QR Code found! ✓';
+                    els.scannerStatus.className = 'scanner-status found';
+                    setTimeout(() => {
+                        if (scannerStream) {
+                            els.scannerStatus.textContent = 'Scanning...';
+                            els.scannerStatus.className = 'scanner-status scanning';
+                        }
+                    }, 2000);
+                    scannerAnimFrame = requestAnimationFrame(() => setTimeout(scanFrameJsQR, 1500));
+                    return;
+                }
+            }
+            scannerAnimFrame = requestAnimationFrame(scanFrameJsQR);
+        }
+
+        // ===================== FILE SCANNING (MULTI-ENGINE) =====================
+        async function scanFromFile(file) {
+            if (!file) return;
+
+            els.scannerStatus.textContent = 'Processing image...';
+            els.scannerStatus.className = 'scanner-status scanning';
+
+            // Show processing overlay
+            let overlay = els.scannerVideoWrapper.querySelector('.scan-processing-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.className = 'scan-processing-overlay';
+                overlay.innerHTML = '<div class="spinner"></div>';
+                els.scannerVideoWrapper.appendChild(overlay);
+            }
+            overlay.style.display = 'flex';
+
+            try {
+                let result = null;
+
+                // Engine 1: Try QrScanner (ZXing-based) — best for styled QR codes
+                if (hasQrScannerLib()) {
+                    try {
+                        result = await scanImageWithQrScanner(file);
+                        if (result) updateEngineInfo('qr-scanner');
+                    } catch(e) { /* continue to next engine */ }
+                }
+
+                // Engine 2: Try jsQR with multi-scale and preprocessing
+                if (!result && hasJsQR()) {
+                    result = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                            const img = new Image();
+                            img.onload = () => {
+                                // Try multiple sizes
+                                const sizes = [640, 1024, 1600, 320];
+                                for (const maxDim of sizes) {
+                                    let w = img.width, h = img.height;
+                                    if (w > maxDim || h > maxDim) {
+                                        const s = maxDim / Math.max(w, h);
+                                        w = Math.round(w * s); h = Math.round(h * s);
+                                    }
+                                    const canvas = document.createElement('canvas');
+                                    canvas.width = w; canvas.height = h;
+                                    const ctx = canvas.getContext('2d');
+                                    ctx.drawImage(img, 0, 0, w, h);
+                                    const r = multiScaleJsQRScan(canvas);
+                                    if (r) { updateEngineInfo('jsQR'); resolve(r); return; }
+                                }
+                                resolve(null);
+                            };
+                            img.src = ev.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                }
+
+                // Engine 3: Try QrScanner with blob if first attempt used File
+                if (!result && hasQrScannerLib()) {
+                    try {
+                        // Convert to canvas blob with preprocessing
+                        const processedBlob = await preprocessFileForScan(file);
+                        if (processedBlob) {
+                            result = await scanImageWithQrScanner(processedBlob);
+                            if (result) updateEngineInfo('qr-scanner');
+                        }
+                    } catch(e) { /* no luck */ }
+                }
+
+                overlay.style.display = 'none';
+
+                if (result) {
+                    handleScanResult(result);
+                    els.scannerStatus.textContent = 'QR Code found in image! ✓';
+                    els.scannerStatus.className = 'scanner-status found';
+                } else {
+                    els.scannerStatus.textContent = 'No QR code found. Try a clearer image.';
+                    els.scannerStatus.className = 'scanner-status error';
+                    showToast('No QR code found in image ❌');
+                }
+            } catch(e) {
+                overlay.style.display = 'none';
+                els.scannerStatus.textContent = 'Scan error: ' + e.message;
+                els.scannerStatus.className = 'scanner-status error';
+            }
+        }
+
+        // Preprocess image: enhance contrast, binarize, upscale
+        function preprocessFileForScan(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const maxDim = 1200;
+                        let w = img.width, h = img.height;
+                        if (w > maxDim || h > maxDim) {
+                            const s = maxDim / Math.max(w, h);
+                            w = Math.round(w * s); h = Math.round(h * s);
+                        }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w * 2; canvas.height = h * 2;
+                        const ctx = canvas.getContext('2d');
+                        // High contrast grayscale
+                        ctx.filter = 'contrast(2.5) grayscale(1) brightness(1.1)';
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        canvas.toBlob(blob => resolve(blob), 'image/png');
+                    };
+                    img.src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // ===================== SCAN RESULT HANDLING =====================
+        let lastScanResult = '';
+        let lastScanTime = 0;
+
+        function handleScanResult(data) {
+            const now = Date.now();
+            if (data === lastScanResult && now - lastScanTime < 3000) return;
+            lastScanResult = data; lastScanTime = now;
+
+            const isUrl = /^https?:\/\//i.test(data);
+            if (isUrl) {
+                els.scanResultText.innerHTML = `<a href="${escapeHtml(data)}" target="_blank" rel="noopener">${escapeHtml(data)}</a>`;
+            } else {
+                els.scanResultText.textContent = data;
+            }
+            els.scanResultBox.classList.add('has-result');
+            els.scanResultActions.classList.remove('hidden');
+            els.scanOpenBtn.style.display = isUrl ? '' : 'none';
+
+            els.scanCopyBtn.onclick = () => {
+                navigator.clipboard.writeText(data).then(() => showToast('Copied! 📋')).catch(() => showToast('Copy failed ❌'));
+            };
+            els.scanOpenBtn.onclick = () => { if (isUrl) window.open(data, '_blank', 'noopener'); };
+            els.scanUseBtn.onclick = () => {
+                state.text = data; saveState(); applyStateToUI(); generateQR();
+                $$('[data-mode]').forEach(b => b.classList.toggle('active', b.dataset.mode === 'generate'));
+                $$('.mode-content').forEach(mc => mc.classList.toggle('active', mc.id === 'mode-generate'));
+                showToast('Text loaded into generator! ✏️');
+            };
+
+            addToHistory(data);
+            showToast('QR Code scanned! ✓');
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div'); div.textContent = str; return div.innerHTML;
+        }
+
+        // ===================== HISTORY =====================
+        function addToHistory(data) {
+            scanHistory = scanHistory.filter(item => item.data !== data);
+            scanHistory.unshift({ data, timestamp: Date.now(), type: /^https?:\/\//i.test(data) ? 'url' : 'text' });
+            if (scanHistory.length > MAX_HISTORY) scanHistory = scanHistory.slice(0, MAX_HISTORY);
+            saveHistory(); renderHistory();
+        }
+
+        function removeFromHistory(index) {
+            scanHistory.splice(index, 1); saveHistory(); renderHistory();
+        }
+
+        function clearHistory() {
+            scanHistory = []; saveHistory(); renderHistory(); showToast('History cleared! 🗑️');
+        }
+
+        function renderHistory() {
+            const list = els.historyList;
+            if (scanHistory.length === 0) {
+                els.historyEmpty.classList.remove('hidden');
+                els.historyClearBtn.classList.add('hidden');
+                list.querySelectorAll('.history-item').forEach(el => el.remove());
+                return;
+            }
+            els.historyEmpty.classList.add('hidden');
+            els.historyClearBtn.classList.remove('hidden');
+            list.querySelectorAll('.history-item').forEach(el => el.remove());
+
+            scanHistory.forEach((item, index) => {
+                const el = document.createElement('div');
+                el.className = 'history-item';
+                const timeStr = formatTime(item.timestamp);
+                const isUrl = item.type === 'url';
+                const displayText = item.data.length > 120 ? item.data.substring(0, 120) + '...' : item.data;
+                el.innerHTML = `
+                    <div class="history-item-content">${escapeHtml(displayText)}</div>
+                    <div class="history-item-meta">
+                        <span class="history-item-time">${timeStr}</span>
+                        <span class="history-item-type ${item.type}">${isUrl ? '🔗 URL' : '📝 Text'}</span>
+                    </div>
+                    <button class="history-item-delete" title="Delete">✕</button>
+                `;
+                el.addEventListener('click', (e) => {
+                    if (e.target.closest('.history-item-delete')) return;
+                    navigator.clipboard.writeText(item.data).then(() => showToast('Copied from history! 📋')).catch(() => {});
+                    if (isUrl) els.scanResultText.innerHTML = `<a href="${escapeHtml(item.data)}" target="_blank" rel="noopener">${escapeHtml(item.data)}</a>`;
+                    else els.scanResultText.textContent = item.data;
+                    els.scanResultBox.classList.add('has-result');
+                    els.scanResultActions.classList.remove('hidden');
+                    els.scanOpenBtn.style.display = isUrl ? '' : 'none';
+                    els.scanCopyBtn.onclick = () => navigator.clipboard.writeText(item.data).then(() => showToast('Copied! 📋'));
+                    els.scanOpenBtn.onclick = () => { if (isUrl) window.open(item.data, '_blank', 'noopener'); };
+                    els.scanUseBtn.onclick = () => {
+                        state.text = item.data; saveState(); applyStateToUI(); generateQR();
+                        $$('[data-mode]').forEach(b => b.classList.toggle('active', b.dataset.mode === 'generate'));
+                        $$('.mode-content').forEach(mc => mc.classList.toggle('active', mc.id === 'mode-generate'));
+                        showToast('Text loaded into generator! ✏️');
+                    };
+                });
+                el.querySelector('.history-item-delete').addEventListener('click', (e) => {
+                    e.stopPropagation(); removeFromHistory(index);
+                });
+                list.appendChild(el);
+            });
+        }
+
+        function formatTime(ts) {
+            const d = new Date(ts), now = new Date(), diff = now - d;
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+            if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+            const options = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            if (d.getFullYear() !== now.getFullYear()) options.year = 'numeric';
+            return d.toLocaleDateString('en-US', options);
+        }
+
+        // ===================== EVENTS =====================
+        function bindEvents() {
+            let debounceTimer;
+            const debouncedGenerate = () => { clearTimeout(debounceTimer); debounceTimer = setTimeout(() => { saveState(); generateQR(); }, 120); };
+
+            // Mode switcher
+            $$('[data-mode]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const mode = btn.dataset.mode;
+                    $$('[data-mode]').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+                    $$('.mode-content').forEach(mc => mc.classList.toggle('active', mc.id === 'mode-' + mode));
+                    if (mode !== 'scan') stopCamera();
+                });
+            });
+
+            // Generator
+            els.text.addEventListener('input', () => { state.text = els.text.value; updateCharCount(); debouncedGenerate(); });
+            els.fgColor.addEventListener('input', () => { state.fgColor = els.fgColor.value; updateGradientPresetActive(); debouncedGenerate(); });
+            els.bgColor.addEventListener('input', () => { state.bgColor = els.bgColor.value; updateGradientPresetActive(); debouncedGenerate(); });
+            els.useGradient.addEventListener('change', () => { state.useGradient = els.useGradient.checked; els.gradientColors.classList.toggle('hidden', !state.useGradient); saveState(); generateQR(); });
+            els.gradientColor1.addEventListener('input', () => { state.gradientColor1 = els.gradientColor1.value; debouncedGenerate(); });
+            els.gradientColor2.addEventListener('input', () => { state.gradientColor2 = els.gradientColor2.value; debouncedGenerate(); });
+            els.size.addEventListener('input', () => { state.size = parseInt(els.size.value); els.sizeValue.textContent = state.size + 'px'; debouncedGenerate(); });
+            els.errorCorrection.addEventListener('change', () => { state.errorCorrection = els.errorCorrection.value; updateCharCount(); saveState(); generateQR(); });
+            els.margin.addEventListener('input', () => { state.margin = parseInt(els.margin.value); els.marginValue.textContent = state.margin; debouncedGenerate(); });
+
+            $$('[data-dot-style]').forEach(el => {
+                el.addEventListener('click', () => {
+                    $$('[data-dot-style]').forEach(e => e.classList.remove('active'));
+                    el.classList.add('active'); state.dotStyle = el.dataset.dotStyle; saveState(); generateQR();
+                });
+            });
+            $$('[data-container]').forEach(el => {
+                el.addEventListener('click', () => {
+                    $$('[data-container]').forEach(e => e.classList.remove('active'));
+                    el.classList.add('active'); state.containerShape = el.dataset.container; updateContainerShape(); saveState();
+                });
+            });
+            $$('[data-embed]').forEach(el => {
+                el.addEventListener('click', () => {
+                    $$('[data-embed]').forEach(e => e.classList.remove('active'));
+                    el.classList.add('active'); state.embedType = el.dataset.embed; updateEmbedVisibility(); saveState(); generateQR();
+                });
+            });
+
+            els.emojiSize.addEventListener('input', () => { state.emojiSize = parseInt(els.emojiSize.value); els.emojiSizeValue.textContent = state.emojiSize + 'px'; debouncedGenerate(); });
+            els.imageInput.addEventListener('change', handleImageUpload);
+            els.clearImageBtn.addEventListener('click', clearImage);
+            els.imageSize.addEventListener('input', () => { state.imageSize = parseInt(els.imageSize.value); els.imageSizeValue.textContent = state.imageSize + 'px'; debouncedGenerate(); });
+            els.imageRound.addEventListener('change', () => { state.imageRound = els.imageRound.checked; saveState(); generateQR(); });
+            els.imageBgWhite.addEventListener('change', () => { state.imageBgWhite = els.imageBgWhite.checked; saveState(); generateQR(); });
+
+            $$('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    $$('.tab').forEach(t => t.classList.remove('active'));
+                    $$('.tab-content').forEach(tc => tc.classList.remove('active'));
+                    tab.classList.add('active'); $('tab-' + tab.dataset.tab).classList.add('active');
+                    state.activeTab = tab.dataset.tab; saveState();
+                });
+            });
+            $$('.gradient-preset').forEach(el => {
+                el.addEventListener('click', () => {
+                    state.fgColor = el.dataset.fg; state.bgColor = el.dataset.bg;
+                    els.fgColor.value = state.fgColor; els.bgColor.value = state.bgColor;
+                    updateGradientPresetActive(); saveState(); generateQR();
+                });
+            });
+
+            $('download-png').addEventListener('click', downloadPNG);
+            $('download-svg').addEventListener('click', downloadSVG);
+            $('copy-btn').addEventListener('click', copyToClipboard);
+            $('reset-btn').addEventListener('click', resetAll);
+
+            // Drag and drop for embed image
+            const uploadArea = els.imageUploadArea;
+            uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.style.borderColor = 'var(--primary)'; });
+            uploadArea.addEventListener('dragleave', () => { uploadArea.style.borderColor = ''; });
+            uploadArea.addEventListener('drop', e => {
+                e.preventDefault(); uploadArea.style.borderColor = '';
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    const dt = new DataTransfer(); dt.items.add(file);
+                    els.imageInput.files = dt.files; els.imageInput.dispatchEvent(new Event('change'));
+                }
+            });
+
+            // Scanner
+            els.startCameraBtn.addEventListener('click', startCamera);
+            els.stopCameraBtn.addEventListener('click', stopCamera);
+            els.scanFileInput.addEventListener('change', (e) => { if (e.target.files[0]) scanFromFile(e.target.files[0]); e.target.value = ''; });
+            els.historyClearBtn.addEventListener('click', clearHistory);
+
+            // File scan drag and drop
+            const fileScanArea = $('file-scan-area');
+            fileScanArea.addEventListener('dragover', e => { e.preventDefault(); fileScanArea.style.borderColor = 'var(--primary)'; });
+            fileScanArea.addEventListener('dragleave', () => { fileScanArea.style.borderColor = ''; });
+            fileScanArea.addEventListener('drop', e => {
+                e.preventDefault(); fileScanArea.style.borderColor = '';
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) scanFromFile(file);
+            });
+        }
+
+        // ===================== INIT =====================
+        function init() {
+            loadState(); loadHistory(); buildEmojiGrid(); bindEvents();
+            applyStateToUI(); generateQR(); renderHistory();
+
+            // Show available engines
+            const engines = [];
+            if (hasQrScannerLib()) engines.push('QrScanner (ZXing)');
+            if (hasJsQR()) engines.push('jsQR');
+            els.scannerEngineInfo.textContent = 'Available engines: ' + (engines.length ? engines.join(', ') : 'None loaded!');
+        }
+
+        init();
+    })();
+    </script>
+</body>
+</html>
