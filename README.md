@@ -15,37 +15,12 @@ A powerful, all-in-one QR code generator and scanner web application. Create bea
 ## 📸 Screenshots
 
 ### Generator Mode
-```
-┌─────────────────────────────────────────────┐
-│  ⚙️ Settings          │  👁️ Preview         │
-│                        │                     │
-│  Content: [________]   │    ┌───────────┐    │
-│                        │    │ █▀▀▀█ █▀█ │    │
-│  🎨 Colors │ ✏️ Style  │    │ █▄▄▄█ █▄█ │    │
-│  │ 🖼️ Embed            │    │   😎      │    │
-│                        │    │ █▀▀▀█     │    │
-│  ■ ■ ■ ■ Presets      │    └───────────┘    │
-│  FG: [■] BG: [■]      │                     │
-│                        │  [📥 PNG] [📄 SVG]  │
-└─────────────────────────────────────────────┘
-```
+<img width="1114" height="749" alt="image" src="https://github.com/user-attachments/assets/1acc86e8-1f3a-4545-8c76-fcc5a77f80be" />
+
 
 ### Scanner Mode
-```
-┌─────────────────────────────────────────────┐
-│  📷 Scanner            │  📜 Scan History    │
-│  ┌───────────────┐     │                     │
-│  │  ╔═══════╗    │     │  ┌─ https://ex... ─┐│
-│  │  ║ Camera ║    │     │  │ 🔗 URL  2m ago  ││
-│  │  ║  Feed  ║    │     │  └─────────────────┘│
-│  │  ╚═══════╝    │     │  ┌─ Hello World ───┐│
-│  └───────────────┘     │  │ 📝 Text  5m ago ││
-│  [📷 Start] [🖼️ File]  │  └─────────────────┘│
-│                        │                     │
-│  Result: example.com   │  [🗑️ Clear All]     │
-│  [📋 Copy] [🔗 Open]   │                     │
-└─────────────────────────────────────────────┘
-```
+<img width="1114" height="774" alt="image" src="https://github.com/user-attachments/assets/7df00847-1b1d-4ad0-9e85-64fb54fe12cf" />
+
 
 ---
 
