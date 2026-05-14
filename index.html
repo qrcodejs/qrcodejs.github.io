@@ -34,6 +34,10 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             --gradient2: linear-gradient(135deg, #fd79a8, #6c5ce7);
         }
 
+        html {
+            font-size: 14px;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: var(--bg);
@@ -98,62 +102,60 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         .app-container {
             position: relative;
             z-index: 1;
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 14px;
             min-height: 100vh;
         }
 
         header {
             text-align: center;
-            padding: 30px 0 20px;
+            padding: 18px 0 12px;
         }
 
         header h1 {
-            font-size: 2.5rem;
+            font-size: 1.9rem;
             font-weight: 800;
             background: var(--gradient1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 8px;
-            letter-spacing: -1px;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
         }
 
         header p {
             color: var(--text-muted);
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
 
         .mode-switcher {
             display: flex;
             justify-content: center;
-            gap: 6px;
-            margin: 16px 0 24px;
+            gap: 4px;
+            margin: 12px auto 18px;
             background: var(--card-bg);
-            border-radius: 16px;
-            padding: 6px;
-            max-width: 400px;
-            margin-left: auto;
-            margin-right: auto;
+            border-radius: 12px;
+            padding: 4px;
+            max-width: 320px;
             border: 1px solid var(--border);
         }
 
         .mode-btn {
             flex: 1;
-            padding: 12px 24px;
+            padding: 9px 18px;
             border: none;
-            border-radius: 12px;
+            border-radius: 9px;
             background: transparent;
             color: var(--text-muted);
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .mode-btn:hover { color: var(--text); }
@@ -170,14 +172,14 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         .main-layout {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-top: 20px;
+            gap: 16px;
+            margin-top: 14px;
         }
 
         .panel {
             background: var(--card-bg);
-            border-radius: 20px;
-            padding: 28px;
+            border-radius: 16px;
+            padding: 20px;
             border: 1px solid var(--border);
             backdrop-filter: blur(10px);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -186,31 +188,31 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         .panel:hover { box-shadow: 0 8px 32px rgba(108, 92, 231, 0.1); }
 
         .panel-title {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 14px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .panel-title .icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 10px;
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
+            font-size: 0.95rem;
         }
 
-        .form-group { margin-bottom: 18px; }
+        .form-group { margin-bottom: 14px; }
 
         .form-group label {
             display: block;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -221,19 +223,19 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         .form-group textarea,
         .form-group select {
             width: 100%;
-            padding: 12px 16px;
+            padding: 9px 12px;
             background: var(--bg);
             border: 2px solid var(--border);
-            border-radius: 12px;
+            border-radius: 10px;
             color: var(--text);
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
             outline: none;
         }
 
         .form-group textarea {
             resize: vertical;
-            min-height: 80px;
+            min-height: 60px;
             font-family: inherit;
         }
 
@@ -249,11 +251,11 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 16px center;
+            background-position: right 14px center;
         }
 
         .char-count {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
             text-align: right;
             margin-top: 4px;
@@ -265,27 +267,27 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         .color-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
         }
 
         .color-input-wrapper {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             background: var(--bg);
             border: 2px solid var(--border);
-            border-radius: 12px;
-            padding: 8px 12px;
+            border-radius: 10px;
+            padding: 6px 10px;
             transition: border-color 0.3s;
         }
 
         .color-input-wrapper:focus-within { border-color: var(--primary); }
 
         .color-input-wrapper input[type="color"] {
-            width: 32px;
-            height: 32px;
+            width: 26px;
+            height: 26px;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             background: none;
             padding: 0;
@@ -294,26 +296,26 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         .color-input-wrapper input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
         .color-input-wrapper input[type="color"]::-webkit-color-swatch {
             border: 2px solid var(--border);
-            border-radius: 6px;
+            border-radius: 5px;
         }
 
-        .color-input-wrapper span { font-size: 0.8rem; color: var(--text-muted); }
+        .color-input-wrapper span { font-size: 0.72rem; color: var(--text-muted); }
 
         .style-options {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            gap: 8px;
         }
 
         .style-option {
             background: var(--bg);
             border: 2px solid var(--border);
-            border-radius: 12px;
-            padding: 14px 10px;
+            border-radius: 10px;
+            padding: 10px 8px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 0.8rem;
+            font-size: 0.72rem;
             font-weight: 600;
         }
 
@@ -329,20 +331,20 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         }
 
         .style-option .style-icon {
-            font-size: 1.5rem;
-            margin-bottom: 6px;
+            font-size: 1.25rem;
+            margin-bottom: 4px;
             display: block;
         }
 
         .emoji-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
-            max-height: 120px;
+            gap: 4px;
+            max-height: 110px;
             overflow-y: auto;
-            padding: 10px;
+            padding: 8px;
             background: var(--bg);
-            border-radius: 12px;
+            border-radius: 10px;
             border: 2px solid var(--border);
         }
 
@@ -351,14 +353,14 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         .emoji-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
         .emoji-btn {
-            width: 36px;
-            height: 36px;
+            width: 30px;
+            height: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             border: 2px solid transparent;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             background: transparent;
             transition: all 0.2s;
@@ -376,8 +378,8 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
 
         .image-upload-area {
             border: 2px dashed var(--border);
-            border-radius: 12px;
-            padding: 20px;
+            border-radius: 10px;
+            padding: 16px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
@@ -396,8 +398,8 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             border-color: var(--accent);
         }
 
-        .image-upload-area .upload-icon { font-size: 2rem; margin-bottom: 8px; }
-        .image-upload-area .upload-text { font-size: 0.85rem; color: var(--text-muted); }
+        .image-upload-area .upload-icon { font-size: 1.7rem; margin-bottom: 6px; }
+        .image-upload-area .upload-text { font-size: 0.75rem; color: var(--text-muted); }
 
         .image-upload-area input[type="file"] {
             position: absolute;
@@ -408,29 +410,29 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         }
 
         .image-preview {
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
             object-fit: cover;
-            margin: 0 auto 8px;
+            margin: 0 auto 6px;
             display: block;
         }
 
         .embed-toggle {
             display: flex;
-            gap: 8px;
-            margin-bottom: 14px;
+            gap: 6px;
+            margin-bottom: 12px;
         }
 
         .embed-toggle-btn {
             flex: 1;
-            padding: 10px;
+            padding: 8px;
             border: 2px solid var(--border);
-            border-radius: 10px;
+            border-radius: 8px;
             background: var(--bg);
             color: var(--text);
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             font-weight: 600;
             transition: all 0.3s;
             text-align: center;
@@ -442,17 +444,17 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             background: rgba(108, 92, 231, 0.15);
         }
 
-        .slider-group { margin-bottom: 18px; }
+        .slider-group { margin-bottom: 14px; }
 
         .slider-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .slider-header label {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
@@ -460,14 +462,14 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         }
 
         .slider-value {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             color: var(--primary);
             font-weight: 700;
         }
 
         input[type="range"] {
             width: 100%;
-            height: 6px;
+            height: 5px;
             -webkit-appearance: none;
             background: var(--border);
             border-radius: 3px;
@@ -476,8 +478,8 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
 
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
             background: var(--primary);
             cursor: pointer;
@@ -495,13 +497,13 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
 
         .qr-preview-wrapper {
             position: relative;
-            margin: 20px 0;
+            margin: 14px 0;
             transition: all 0.5s ease;
         }
 
         .qr-preview-container {
-            border-radius: 20px;
-            padding: 24px;
+            border-radius: 16px;
+            padding: 18px;
             position: relative;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             transition: all 0.5s ease;
@@ -509,31 +511,35 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             overflow: hidden;
         }
 
-        .qr-preview-container.shape-rounded { border-radius: 30px; }
-        .qr-preview-container.shape-circle { border-radius: 50%; padding: 40px; }
+        .qr-preview-container.shape-rounded { border-radius: 24px; }
+        .qr-preview-container.shape-circle { border-radius: 50%; padding: 32px; }
 
-        #qr-output-canvas { display: block; }
+        #qr-output-canvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
 
         .btn-group {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             width: 100%;
-            margin-top: 16px;
+            margin-top: 12px;
         }
 
         .btn {
             flex: 1;
-            padding: 14px 20px;
+            padding: 10px 14px;
             border: none;
-            border-radius: 12px;
-            font-size: 0.9rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .btn-primary {
@@ -582,10 +588,10 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
 
         .clear-image-btn {
             display: inline-block;
-            margin-top: 8px;
-            padding: 6px 14px;
-            font-size: 0.75rem;
-            border-radius: 8px;
+            margin-top: 6px;
+            padding: 5px 12px;
+            font-size: 0.68rem;
+            border-radius: 7px;
             background: rgba(255, 71, 87, 0.15);
             color: #ff4757;
             border: 1px solid rgba(255, 71, 87, 0.3);
@@ -597,21 +603,21 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
 
         .tabs {
             display: flex;
-            gap: 4px;
+            gap: 3px;
             background: var(--bg);
-            border-radius: 12px;
-            padding: 4px;
-            margin-bottom: 18px;
+            border-radius: 10px;
+            padding: 3px;
+            margin-bottom: 14px;
         }
 
         .tab {
             flex: 1;
-            padding: 10px 16px;
+            padding: 8px 12px;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             background: transparent;
             color: var(--text-muted);
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
@@ -626,18 +632,18 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         .corner-style-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            gap: 6px;
         }
 
         .corner-option {
             background: var(--bg);
             border: 2px solid var(--border);
-            border-radius: 10px;
-            padding: 12px 8px;
+            border-radius: 8px;
+            padding: 9px 6px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 0.75rem;
+            font-size: 0.68rem;
             font-weight: 600;
         }
 
@@ -648,26 +654,26 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         }
 
         .corner-option .preview-shape {
-            width: 24px;
-            height: 24px;
-            margin: 0 auto 6px;
+            width: 20px;
+            height: 20px;
+            margin: 0 auto 4px;
             border: 3px solid var(--text);
         }
 
         .corner-option .preview-shape.square { border-radius: 0; }
-        .corner-option .preview-shape.rounded { border-radius: 6px; }
+        .corner-option .preview-shape.rounded { border-radius: 5px; }
         .corner-option .preview-shape.circle { border-radius: 50%; }
 
         .gradient-presets {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-bottom: 14px;
+            gap: 6px;
+            margin-bottom: 12px;
         }
 
         .gradient-preset {
-            height: 36px;
-            border-radius: 10px;
+            height: 30px;
+            border-radius: 8px;
             cursor: pointer;
             border: 2px solid transparent;
             transition: all 0.3s;
@@ -682,38 +688,38 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         .checkbox-group {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 14px;
+            gap: 8px;
+            padding: 8px 12px;
             background: var(--bg);
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             transition: background 0.3s;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .checkbox-group:hover { background: rgba(108, 92, 231, 0.1); }
 
         .checkbox-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
+            width: 15px;
+            height: 15px;
             accent-color: var(--primary);
             cursor: pointer;
         }
 
-        .checkbox-group span { font-size: 0.85rem; font-weight: 600; }
+        .checkbox-group span { font-size: 0.75rem; font-weight: 600; }
 
         .toast {
             position: fixed;
-            bottom: 30px;
+            bottom: 24px;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
             background: var(--card-bg);
             color: var(--text);
-            padding: 14px 28px;
-            border-radius: 14px;
+            padding: 11px 22px;
+            border-radius: 12px;
             border: 1px solid var(--border);
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             z-index: 1000;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -722,9 +728,9 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         .toast.show { transform: translateX(-50%) translateY(0); }
 
         .settings-scroll {
-            max-height: calc(100vh - 200px);
+            max-height: calc(100vh - 160px);
             overflow-y: auto;
-            padding-right: 8px;
+            padding-right: 6px;
         }
 
         .settings-scroll::-webkit-scrollbar { width: 6px; }
@@ -735,10 +741,10 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             background: rgba(255, 71, 87, 0.1);
             border: 1px solid rgba(255, 71, 87, 0.3);
             color: #ff6b81;
-            padding: 10px 14px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            margin-bottom: 14px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            margin-bottom: 12px;
             display: none;
         }
 
@@ -746,27 +752,27 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
 
         .size-display {
             text-align: center;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
-            margin-top: 8px;
+            margin-top: 6px;
         }
 
         /* ========== SCANNER STYLES ========== */
         .scanner-layout {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-top: 20px;
+            gap: 16px;
+            margin-top: 14px;
         }
 
         .scanner-video-wrapper {
             position: relative;
             width: 100%;
-            border-radius: 16px;
+            border-radius: 14px;
             overflow: hidden;
             background: #000;
             aspect-ratio: 1;
-            max-height: 400px;
+            max-height: 340px;
         }
 
         .scanner-video-wrapper video {
@@ -791,7 +797,7 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             transform: translate(-50%, -50%);
             width: 65%; height: 65%;
             border: 3px solid rgba(108, 92, 231, 0.7);
-            border-radius: 20px;
+            border-radius: 16px;
             box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4);
         }
 
@@ -801,7 +807,7 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             top: -3px; left: -3px;
             right: -3px; bottom: -3px;
             border: 3px solid transparent;
-            border-radius: 20px;
+            border-radius: 16px;
             animation: scan-pulse 2s ease-in-out infinite;
         }
 
@@ -830,20 +836,20 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             align-items: center;
             justify-content: center;
             height: 100%;
-            min-height: 300px;
+            min-height: 250px;
             color: var(--text-muted);
-            gap: 12px;
+            gap: 10px;
         }
 
-        .scanner-placeholder .placeholder-icon { font-size: 4rem; opacity: 0.5; }
-        .scanner-placeholder .placeholder-text { font-size: 0.9rem; text-align: center; }
+        .scanner-placeholder .placeholder-icon { font-size: 3rem; opacity: 0.5; }
+        .scanner-placeholder .placeholder-text { font-size: 0.8rem; text-align: center; }
 
         .scanner-status {
             text-align: center;
-            padding: 10px;
-            font-size: 0.85rem;
+            padding: 8px;
+            font-size: 0.75rem;
             color: var(--text-muted);
-            margin-top: 10px;
+            margin-top: 8px;
         }
 
         .scanner-status.scanning { color: var(--accent); }
@@ -853,9 +859,9 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         .scan-result-box {
             background: var(--bg);
             border: 2px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            margin-top: 14px;
+            border-radius: 10px;
+            padding: 13px;
+            margin-top: 12px;
             word-break: break-all;
             position: relative;
             transition: border-color 0.3s;
@@ -864,18 +870,18 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         .scan-result-box.has-result { border-color: var(--accent); }
 
         .scan-result-label {
-            font-size: 0.75rem;
+            font-size: 0.65rem;
             font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .scan-result-text {
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             color: var(--text);
-            min-height: 24px;
+            min-height: 22px;
             line-height: 1.5;
         }
 
@@ -888,19 +894,19 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
 
         .scan-result-actions {
             display: flex;
-            gap: 8px;
-            margin-top: 12px;
+            gap: 6px;
+            margin-top: 10px;
         }
 
-        .scan-result-actions .btn { padding: 10px 16px; font-size: 0.8rem; }
+        .scan-result-actions .btn { padding: 8px 12px; font-size: 0.72rem; }
 
         .history-panel { margin-top: 0; }
 
         .history-list {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            max-height: 500px;
+            gap: 6px;
+            max-height: 440px;
             overflow-y: auto;
             padding-right: 4px;
         }
@@ -912,8 +918,8 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         .history-item {
             background: var(--bg);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px 14px;
+            border-radius: 10px;
+            padding: 10px 12px;
             cursor: pointer;
             transition: all 0.2s;
             position: relative;
@@ -925,11 +931,11 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         }
 
         .history-item-content {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             color: var(--text);
             word-break: break-all;
             line-height: 1.4;
-            padding-right: 60px;
+            padding-right: 50px;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
@@ -940,15 +946,15 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 6px;
+            margin-top: 5px;
         }
 
-        .history-item-time { font-size: 0.7rem; color: var(--text-muted); }
+        .history-item-time { font-size: 0.62rem; color: var(--text-muted); }
 
         .history-item-type {
-            font-size: 0.65rem;
-            padding: 2px 8px;
-            border-radius: 6px;
+            font-size: 0.58rem;
+            padding: 2px 7px;
+            border-radius: 5px;
             font-weight: 600;
             text-transform: uppercase;
         }
@@ -965,16 +971,16 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
 
         .history-item-delete {
             position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 28px;
-            height: 28px;
+            top: 7px;
+            right: 7px;
+            width: 24px;
+            height: 24px;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             background: rgba(255, 71, 87, 0.1);
             color: #ff4757;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.72rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -987,26 +993,26 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
 
         .history-empty {
             text-align: center;
-            padding: 40px 20px;
+            padding: 32px 16px;
             color: var(--text-muted);
         }
 
-        .history-empty .empty-icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.4; }
-        .history-empty .empty-text { font-size: 0.85rem; }
+        .history-empty .empty-icon { font-size: 2.5rem; margin-bottom: 10px; opacity: 0.4; }
+        .history-empty .empty-text { font-size: 0.75rem; }
 
         .history-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
 
         .history-header .panel-title { margin-bottom: 0; }
 
         .history-clear-btn {
-            padding: 6px 14px;
-            font-size: 0.75rem;
-            border-radius: 8px;
+            padding: 5px 12px;
+            font-size: 0.68rem;
+            border-radius: 7px;
             background: rgba(255, 71, 87, 0.1);
             color: #ff4757;
             border: 1px solid rgba(255, 71, 87, 0.2);
@@ -1019,15 +1025,15 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
 
         .file-scan-area {
             border: 2px dashed var(--border);
-            border-radius: 12px;
-            padding: 24px;
+            border-radius: 10px;
+            padding: 18px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
             background: var(--bg);
             position: relative;
             overflow: hidden;
-            margin-top: 12px;
+            margin-top: 10px;
         }
 
         .file-scan-area:hover {
@@ -1043,14 +1049,14 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             cursor: pointer;
         }
 
-        .file-scan-area .upload-icon { font-size: 2rem; margin-bottom: 8px; }
-        .file-scan-area .upload-text { font-size: 0.85rem; color: var(--text-muted); }
+        .file-scan-area .upload-icon { font-size: 1.7rem; margin-bottom: 6px; }
+        .file-scan-area .upload-text { font-size: 0.75rem; color: var(--text-muted); }
 
         .scanner-engine-info {
             text-align: center;
-            font-size: 0.7rem;
+            font-size: 0.62rem;
             color: var(--text-muted);
-            margin-top: 6px;
+            margin-top: 5px;
             opacity: 0.7;
         }
 
@@ -1062,13 +1068,13 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 16px;
+            border-radius: 14px;
             z-index: 10;
         }
 
         .scan-processing-overlay .spinner {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border: 4px solid var(--border);
             border-top-color: var(--accent);
             border-radius: 50%;
@@ -1080,20 +1086,21 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         }
 
         @media (max-width: 768px) {
+            html { font-size: 15px; }
             .main-layout, .scanner-layout { grid-template-columns: 1fr; }
-            header h1 { font-size: 1.8rem; }
-            .app-container { padding: 12px; }
-            .panel { padding: 20px; }
+            header h1 { font-size: 1.6rem; }
+            .app-container { padding: 10px; max-width: 100%; }
+            .panel { padding: 16px; }
             .style-options { grid-template-columns: repeat(2, 1fr); }
             .gradient-presets { grid-template-columns: repeat(3, 1fr); }
             .settings-scroll { max-height: none; }
         }
 
         @media (max-width: 480px) {
-            header h1 { font-size: 1.5rem; }
+            header h1 { font-size: 1.4rem; }
             .color-row { grid-template-columns: 1fr; }
             .btn-group { flex-direction: column; }
-            .mode-btn { padding: 10px 16px; font-size: 0.85rem; }
+            .mode-btn { padding: 8px 14px; font-size: 0.75rem; }
         }
 
         .hidden { display: none !important; }
@@ -1261,7 +1268,7 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
                             </div>
 
                             <div id="embed-none" class="embed-content">
-                                <p style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 20px;">
+                                <p style="color: var(--text-muted); font-size: 0.75rem; text-align: center; padding: 18px;">
                                     No embedded content. Select emoji or image above.<br><br>
                                     <em>Tip: Use "High" error correction when embedding logos.</em>
                                 </p>
@@ -1369,7 +1376,7 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
                     <div class="scanner-status" id="scanner-status">Ready to scan</div>
                     <div class="scanner-engine-info" id="scanner-engine-info"></div>
 
-                    <div class="btn-group" style="margin-top: 14px;">
+                    <div class="btn-group" style="margin-top: 12px;">
                         <button class="btn btn-success" id="start-camera-btn">📷 Start Camera</button>
                         <button class="btn btn-danger hidden" id="stop-camera-btn">⏹ Stop Camera</button>
                     </div>
@@ -1447,8 +1454,8 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         let scannerAnimFrame = null;
         let scanHistory = [];
         const MAX_HISTORY = 10;
-        let qrScannerInstance = null; // for QrScanner library camera mode
-        let activeScanEngine = 'jsQR'; // track which engine is active
+        let qrScannerInstance = null;
+        let activeScanEngine = 'jsQR';
 
         const EMOJIS = [
             '😀','😎','🥰','🤩','😇','🤖','👻','💀',
@@ -1517,7 +1524,6 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             scannerVideoWrapper: $('scanner-video-wrapper')
         };
 
-        // ===================== DETECT AVAILABLE SCANNER ENGINES =====================
         function hasQrScannerLib() {
             return typeof QrScanner !== 'undefined' && !window._qrScannerFailed;
         }
@@ -1536,7 +1542,6 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             els.scannerEngineInfo.textContent = 'Engine: ' + (names[engine] || engine);
         }
 
-        // ===================== UTF-8 ENCODING =====================
         function encodeUTF8(str) {
             var utf8 = [];
             for (var i = 0; i < str.length; i++) {
@@ -1554,7 +1559,6 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             return utf8;
         }
 
-        // ===================== PERSISTENCE =====================
         function loadState() {
             try { const s = localStorage.getItem('qr-gen-pro-state'); if (s) state = { ...DEFAULT_STATE, ...JSON.parse(s) }; } catch(e){}
         }
@@ -1568,7 +1572,6 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             try { localStorage.setItem('qr-scan-history', JSON.stringify(scanHistory)); } catch(e){}
         }
 
-        // ===================== UI SYNC =====================
         function applyStateToUI() {
             els.text.value = state.text;
             updateCharCount();
@@ -1639,7 +1642,6 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             setTimeout(() => els.toast.classList.remove('show'), 2500);
         }
 
-        // ===================== EMOJI GRID =====================
         function buildEmojiGrid() {
             els.emojiGrid.innerHTML = '';
             EMOJIS.forEach(emoji => {
@@ -1656,7 +1658,6 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             });
         }
 
-        // ===================== QR GENERATION =====================
         function getBestTypeNumber(utf8Bytes, ecLevel) {
             for (let t = 1; t <= 40; t++) {
                 try { const qr = qrcode(t, ecLevel); qr.addData(utf8Bytes, 'Byte'); qr.make(); return t; }
@@ -1773,7 +1774,6 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
         }
 
-        // ===================== IMAGE HANDLING =====================
         function handleImageUpload(e) {
             const file = e.target.files[0]; if (!file) return;
             const reader = new FileReader();
@@ -1813,7 +1813,6 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             saveState(); generateQR();
         }
 
-        // ===================== DOWNLOAD / COPY =====================
         function downloadPNG() {
             const link=document.createElement('a'); link.download='qrcode.png';
             link.href=els.canvas.toDataURL('image/png'); link.click(); showToast('PNG downloaded! 📥');
@@ -1846,9 +1845,6 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             showToast('Reset to defaults! 🔄');
         }
 
-        // ===================== MULTI-ENGINE SCANNER =====================
-
-        // Attempt scan with QrScanner library (ZXing-based, much better with styled QR codes)
         function scanImageWithQrScanner(imgOrBlob) {
             return new Promise((resolve, reject) => {
                 if (!hasQrScannerLib()) return reject(new Error('QrScanner not available'));
@@ -1861,26 +1857,21 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             });
         }
 
-        // Attempt scan with jsQR
         function scanImageDataWithJsQR(imageData) {
             if (!hasJsQR()) return null;
             const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'attemptBoth' });
             return code ? code.data : null;
         }
 
-        // Get ImageData from canvas for jsQR
         function getImageDataFromCanvas(canvas) {
             return canvas.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, canvas.width, canvas.height);
         }
 
-        // Multi-scale scan: try original, then upscaled, then with preprocessing
         function multiScaleJsQRScan(sourceCanvas) {
-            // Try original
             let imageData = getImageDataFromCanvas(sourceCanvas);
             let result = scanImageDataWithJsQR(imageData);
             if (result) return result;
 
-            // Try upscaled 2x
             const scales = [2, 3];
             for (const scale of scales) {
                 const upCanvas = document.createElement('canvas');
@@ -1894,7 +1885,6 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
                 if (result) return result;
             }
 
-            // Try with contrast enhancement
             const enhCanvas = document.createElement('canvas');
             enhCanvas.width = sourceCanvas.width * 2;
             enhCanvas.height = sourceCanvas.height * 2;
@@ -1905,7 +1895,6 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             result = scanImageDataWithJsQR(imageData);
             if (result) return result;
 
-            // Try with threshold binarization
             const binCanvas = document.createElement('canvas');
             binCanvas.width = sourceCanvas.width * 2;
             binCanvas.height = sourceCanvas.height * 2;
@@ -1919,13 +1908,12 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
 
         function binarizeImageData(imageData) {
             const d = imageData.data;
-            // Compute average brightness
             let sum = 0;
             for (let i = 0; i < d.length; i += 4) {
                 sum += d[i] * 0.299 + d[i+1] * 0.587 + d[i+2] * 0.114;
             }
             const avg = sum / (d.length / 4);
-            const threshold = avg * 0.6; // slightly below average
+            const threshold = avg * 0.6;
             for (let i = 0; i < d.length; i += 4) {
                 const gray = d[i] * 0.299 + d[i+1] * 0.587 + d[i+2] * 0.114;
                 const val = gray < threshold ? 0 : 255;
@@ -1934,10 +1922,8 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             }
         }
 
-        // ===================== CAMERA SCANNING =====================
         async function startCamera() {
             try {
-                // Prefer QrScanner library for camera (uses ZXing under the hood)
                 if (hasQrScannerLib()) {
                     await startCameraWithQrScanner();
                 } else {
@@ -1989,7 +1975,6 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
                 await qrScannerInstance.start();
                 els.scannerStatus.textContent = 'Scanning...';
             } catch(e) {
-                // Fallback to jsQR
                 qrScannerInstance.destroy();
                 qrScannerInstance = null;
                 await startCameraWithJsQR();
@@ -2017,13 +2002,11 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         }
 
         function stopCamera() {
-            // Stop QrScanner instance
             if (qrScannerInstance) {
                 qrScannerInstance.stop();
                 qrScannerInstance.destroy();
                 qrScannerInstance = null;
             }
-            // Stop manual stream
             if (scannerAnimFrame) { cancelAnimationFrame(scannerAnimFrame); scannerAnimFrame = null; }
             if (scannerStream) { scannerStream.getTracks().forEach(t => t.stop()); scannerStream = null; }
             els.scannerVideo.srcObject = null;
@@ -2037,7 +2020,6 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             els.scannerEngineInfo.textContent = '';
         }
 
-        // jsQR camera frame scanning with multi-scale attempts
         function scanFrameJsQR() {
             if (!scannerStream) return;
             const video = els.scannerVideo;
@@ -2046,8 +2028,6 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
 
             if (video.readyState === video.HAVE_ENOUGH_DATA) {
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-                // Try multi-scale scan
                 const result = multiScaleJsQRScan(canvas);
 
                 if (result) {
@@ -2067,14 +2047,12 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             scannerAnimFrame = requestAnimationFrame(scanFrameJsQR);
         }
 
-        // ===================== FILE SCANNING (MULTI-ENGINE) =====================
         async function scanFromFile(file) {
             if (!file) return;
 
             els.scannerStatus.textContent = 'Processing image...';
             els.scannerStatus.className = 'scanner-status scanning';
 
-            // Show processing overlay
             let overlay = els.scannerVideoWrapper.querySelector('.scan-processing-overlay');
             if (!overlay) {
                 overlay = document.createElement('div');
@@ -2087,22 +2065,19 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             try {
                 let result = null;
 
-                // Engine 1: Try QrScanner (ZXing-based) — best for styled QR codes
                 if (hasQrScannerLib()) {
                     try {
                         result = await scanImageWithQrScanner(file);
                         if (result) updateEngineInfo('qr-scanner');
-                    } catch(e) { /* continue to next engine */ }
+                    } catch(e) { }
                 }
 
-                // Engine 2: Try jsQR with multi-scale and preprocessing
                 if (!result && hasJsQR()) {
                     result = await new Promise((resolve) => {
                         const reader = new FileReader();
                         reader.onload = (ev) => {
                             const img = new Image();
                             img.onload = () => {
-                                // Try multiple sizes
                                 const sizes = [640, 1024, 1600, 320];
                                 for (const maxDim of sizes) {
                                     let w = img.width, h = img.height;
@@ -2125,16 +2100,14 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
                     });
                 }
 
-                // Engine 3: Try QrScanner with blob if first attempt used File
                 if (!result && hasQrScannerLib()) {
                     try {
-                        // Convert to canvas blob with preprocessing
                         const processedBlob = await preprocessFileForScan(file);
                         if (processedBlob) {
                             result = await scanImageWithQrScanner(processedBlob);
                             if (result) updateEngineInfo('qr-scanner');
                         }
-                    } catch(e) { /* no luck */ }
+                    } catch(e) { }
                 }
 
                 overlay.style.display = 'none';
@@ -2155,7 +2128,6 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             }
         }
 
-        // Preprocess image: enhance contrast, binarize, upscale
         function preprocessFileForScan(file) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -2171,7 +2143,6 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
                         const canvas = document.createElement('canvas');
                         canvas.width = w * 2; canvas.height = h * 2;
                         const ctx = canvas.getContext('2d');
-                        // High contrast grayscale
                         ctx.filter = 'contrast(2.5) grayscale(1) brightness(1.1)';
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                         canvas.toBlob(blob => resolve(blob), 'image/png');
@@ -2182,7 +2153,6 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             });
         }
 
-        // ===================== SCAN RESULT HANDLING =====================
         let lastScanResult = '';
         let lastScanTime = 0;
 
@@ -2220,7 +2190,6 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             const div = document.createElement('div'); div.textContent = str; return div.innerHTML;
         }
 
-        // ===================== HISTORY =====================
         function addToHistory(data) {
             scanHistory = scanHistory.filter(item => item.data !== data);
             scanHistory.unshift({ data, timestamp: Date.now(), type: /^https?:\/\//i.test(data) ? 'url' : 'text' });
@@ -2296,12 +2265,10 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             return d.toLocaleDateString('en-US', options);
         }
 
-        // ===================== EVENTS =====================
         function bindEvents() {
             let debounceTimer;
             const debouncedGenerate = () => { clearTimeout(debounceTimer); debounceTimer = setTimeout(() => { saveState(); generateQR(); }, 120); };
 
-            // Mode switcher
             $$('[data-mode]').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const mode = btn.dataset.mode;
@@ -2311,7 +2278,6 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
                 });
             });
 
-            // Generator
             els.text.addEventListener('input', () => { state.text = els.text.value; updateCharCount(); debouncedGenerate(); });
             els.fgColor.addEventListener('input', () => { state.fgColor = els.fgColor.value; updateGradientPresetActive(); debouncedGenerate(); });
             els.bgColor.addEventListener('input', () => { state.bgColor = els.bgColor.value; updateGradientPresetActive(); debouncedGenerate(); });
@@ -2369,7 +2335,6 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             $('copy-btn').addEventListener('click', copyToClipboard);
             $('reset-btn').addEventListener('click', resetAll);
 
-            // Drag and drop for embed image
             const uploadArea = els.imageUploadArea;
             uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.style.borderColor = 'var(--primary)'; });
             uploadArea.addEventListener('dragleave', () => { uploadArea.style.borderColor = ''; });
@@ -2382,13 +2347,11 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
                 }
             });
 
-            // Scanner
             els.startCameraBtn.addEventListener('click', startCamera);
             els.stopCameraBtn.addEventListener('click', stopCamera);
             els.scanFileInput.addEventListener('change', (e) => { if (e.target.files[0]) scanFromFile(e.target.files[0]); e.target.value = ''; });
             els.historyClearBtn.addEventListener('click', clearHistory);
 
-            // File scan drag and drop
             const fileScanArea = $('file-scan-area');
             fileScanArea.addEventListener('dragover', e => { e.preventDefault(); fileScanArea.style.borderColor = 'var(--primary)'; });
             fileScanArea.addEventListener('dragleave', () => { fileScanArea.style.borderColor = ''; });
@@ -2399,12 +2362,10 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             });
         }
 
-        // ===================== INIT =====================
         function init() {
             loadState(); loadHistory(); buildEmojiGrid(); bindEvents();
             applyStateToUI(); generateQR(); renderHistory();
 
-            // Show available engines
             const engines = [];
             if (hasQrScannerLib()) engines.push('QrScanner (ZXing)');
             if (hasJsQR()) engines.push('jsQR');
