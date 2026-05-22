@@ -839,10 +839,26 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             min-height: 250px;
             color: var(--text-muted);
             gap: 10px;
+            padding: 16px;
         }
 
         .scanner-placeholder .placeholder-icon { font-size: 3rem; opacity: 0.5; }
         .scanner-placeholder .placeholder-text { font-size: 0.8rem; text-align: center; }
+        .scanner-placeholder .placeholder-hint {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            opacity: 0.7;
+            margin-top: 4px;
+        }
+        .scanner-placeholder kbd {
+            background: var(--card-bg2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: monospace;
+            font-size: 0.7rem;
+            color: var(--accent);
+        }
 
         .scanner-status {
             text-align: center;
@@ -1041,6 +1057,11 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             background: rgba(108, 92, 231, 0.05);
         }
 
+        .file-scan-area.paste-active {
+            border-color: var(--accent);
+            background: rgba(0, 206, 201, 0.08);
+        }
+
         .file-scan-area input[type="file"] {
             position: absolute;
             top: 0; left: 0;
@@ -1051,6 +1072,27 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
 
         .file-scan-area .upload-icon { font-size: 1.7rem; margin-bottom: 6px; }
         .file-scan-area .upload-text { font-size: 0.75rem; color: var(--text-muted); }
+        .file-scan-area .upload-hint {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            opacity: 0.75;
+            margin-top: 4px;
+        }
+        .file-scan-area kbd {
+            background: var(--card-bg2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: monospace;
+            font-size: 0.66rem;
+            color: var(--accent);
+        }
+
+        .scan-action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
 
         .scanner-engine-info {
             text-align: center;
@@ -1085,6 +1127,22 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             to { transform: rotate(360deg); }
         }
 
+        .paste-flash {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 206, 201, 0.4);
+            border-radius: 14px;
+            animation: paste-flash 0.6s ease-out;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        @keyframes paste-flash {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
         @media (max-width: 768px) {
             html { font-size: 15px; }
             .main-layout, .scanner-layout { grid-template-columns: 1fr; }
@@ -1101,6 +1159,7 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             .color-row { grid-template-columns: 1fr; }
             .btn-group { flex-direction: column; }
             .mode-btn { padding: 8px 14px; font-size: 0.75rem; }
+            .scan-action-buttons { flex-direction: column; }
         }
 
         .hidden { display: none !important; }
@@ -1362,7 +1421,8 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
                     <div class="scanner-video-wrapper" id="scanner-video-wrapper">
                         <div class="scanner-placeholder" id="scanner-placeholder">
                             <div class="placeholder-icon">📷</div>
-                            <div class="placeholder-text">Click "Start Camera" to begin scanning<br>or upload a QR code image below</div>
+                            <div class="placeholder-text">Click "Start Camera" to begin scanning<br>or upload/paste a QR code image below</div>
+                            <div class="placeholder-hint">Tip: Press <kbd>Ctrl</kbd>+<kbd>V</kbd> to paste an image from clipboard</div>
                         </div>
                         <video id="scanner-video" playsinline autoplay muted class="hidden"></video>
                         <canvas id="scanner-canvas"></canvas>
@@ -1383,8 +1443,13 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
 
                     <div class="file-scan-area" id="file-scan-area">
                         <div class="upload-icon">🖼️</div>
-                        <div class="upload-text">Upload a QR code image to scan</div>
+                        <div class="upload-text">Click, drag, or drop a QR code image to scan</div>
+                        <div class="upload-hint">Or press <kbd>Ctrl</kbd>+<kbd>V</kbd> anywhere to paste from clipboard</div>
                         <input type="file" id="scan-file-input" accept="image/*">
+                    </div>
+
+                    <div class="scan-action-buttons">
+                        <button class="btn btn-secondary" id="paste-clipboard-btn" type="button">📋 Paste from Clipboard</button>
                     </div>
 
                     <div class="scan-result-box" id="scan-result-box">
@@ -1456,6 +1521,7 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
         const MAX_HISTORY = 10;
         let qrScannerInstance = null;
         let activeScanEngine = 'jsQR';
+        let currentMode = 'generate';
 
         const EMOJIS = [
             '😀','😎','🥰','🤩','😇','🤖','👻','💀',
@@ -1521,7 +1587,9 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             historyList: $('history-list'),
             historyEmpty: $('history-empty'),
             historyClearBtn: $('history-clear-btn'),
-            scannerVideoWrapper: $('scanner-video-wrapper')
+            scannerVideoWrapper: $('scanner-video-wrapper'),
+            pasteClipboardBtn: $('paste-clipboard-btn'),
+            fileScanArea: $('file-scan-area')
         };
 
         function hasQrScannerLib() {
@@ -2153,6 +2221,76 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             });
         }
 
+        // ===================== CLIPBOARD PASTE =====================
+        function flashPasteIndicator() {
+            const flash = document.createElement('div');
+            flash.className = 'paste-flash';
+            els.scannerVideoWrapper.appendChild(flash);
+            setTimeout(() => flash.remove(), 600);
+        }
+
+        async function pasteFromClipboardButton() {
+            // Try the modern Clipboard API first
+            if (navigator.clipboard && navigator.clipboard.read) {
+                try {
+                    const items = await navigator.clipboard.read();
+                    for (const item of items) {
+                        for (const type of item.types) {
+                            if (type.startsWith('image/')) {
+                                const blob = await item.getType(type);
+                                handlePastedImage(blob);
+                                return;
+                            }
+                        }
+                    }
+                    showToast('No image found in clipboard ❌');
+                } catch(e) {
+                    if (e.name === 'NotAllowedError') {
+                        showToast('Clipboard permission denied. Try Ctrl+V instead 📋');
+                    } else {
+                        showToast('Could not read clipboard. Try Ctrl+V instead 📋');
+                    }
+                }
+            } else {
+                showToast('Clipboard API not supported. Use Ctrl+V to paste 📋');
+            }
+        }
+
+        function handlePastedImage(blob) {
+            if (!blob) return;
+            // Convert blob to File for consistent handling
+            const file = new File([blob], 'pasted-image.png', { type: blob.type || 'image/png' });
+            flashPasteIndicator();
+            showToast('Image pasted! Scanning... 📋');
+            scanFromFile(file);
+        }
+
+        function handlePasteEvent(e) {
+            // Only handle paste in scan mode
+            if (currentMode !== 'scan') return;
+
+            // Don't intercept paste in editable fields
+            const target = e.target;
+            const tagName = target && target.tagName;
+            if (tagName === 'INPUT' || tagName === 'TEXTAREA' || (target && target.isContentEditable)) {
+                return;
+            }
+
+            const items = (e.clipboardData || window.clipboardData)?.items;
+            if (!items) return;
+
+            for (const item of items) {
+                if (item.type && item.type.startsWith('image/')) {
+                    e.preventDefault();
+                    const blob = item.getAsFile();
+                    if (blob) {
+                        handlePastedImage(blob);
+                    }
+                    return;
+                }
+            }
+        }
+
         let lastScanResult = '';
         let lastScanTime = 0;
 
@@ -2177,8 +2315,7 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             els.scanOpenBtn.onclick = () => { if (isUrl) window.open(data, '_blank', 'noopener'); };
             els.scanUseBtn.onclick = () => {
                 state.text = data; saveState(); applyStateToUI(); generateQR();
-                $$('[data-mode]').forEach(b => b.classList.toggle('active', b.dataset.mode === 'generate'));
-                $$('.mode-content').forEach(mc => mc.classList.toggle('active', mc.id === 'mode-generate'));
+                switchMode('generate');
                 showToast('Text loaded into generator! ✏️');
             };
 
@@ -2243,8 +2380,7 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
                     els.scanOpenBtn.onclick = () => { if (isUrl) window.open(item.data, '_blank', 'noopener'); };
                     els.scanUseBtn.onclick = () => {
                         state.text = item.data; saveState(); applyStateToUI(); generateQR();
-                        $$('[data-mode]').forEach(b => b.classList.toggle('active', b.dataset.mode === 'generate'));
-                        $$('.mode-content').forEach(mc => mc.classList.toggle('active', mc.id === 'mode-generate'));
+                        switchMode('generate');
                         showToast('Text loaded into generator! ✏️');
                     };
                 });
@@ -2265,17 +2401,19 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             return d.toLocaleDateString('en-US', options);
         }
 
+        function switchMode(mode) {
+            currentMode = mode;
+            $$('[data-mode]').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+            $$('.mode-content').forEach(mc => mc.classList.toggle('active', mc.id === 'mode-' + mode));
+            if (mode !== 'scan') stopCamera();
+        }
+
         function bindEvents() {
             let debounceTimer;
             const debouncedGenerate = () => { clearTimeout(debounceTimer); debounceTimer = setTimeout(() => { saveState(); generateQR(); }, 120); };
 
             $$('[data-mode]').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const mode = btn.dataset.mode;
-                    $$('[data-mode]').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
-                    $$('.mode-content').forEach(mc => mc.classList.toggle('active', mc.id === 'mode-' + mode));
-                    if (mode !== 'scan') stopCamera();
-                });
+                btn.addEventListener('click', () => switchMode(btn.dataset.mode));
             });
 
             els.text.addEventListener('input', () => { state.text = els.text.value; updateCharCount(); debouncedGenerate(); });
@@ -2352,7 +2490,21 @@ Copyright (c) 2025-2026 Valentyn Kolesnikov <0009-0003-9608-3364@orcid.org>
             els.scanFileInput.addEventListener('change', (e) => { if (e.target.files[0]) scanFromFile(e.target.files[0]); e.target.value = ''; });
             els.historyClearBtn.addEventListener('click', clearHistory);
 
-            const fileScanArea = $('file-scan-area');
+            // ===== CLIPBOARD PASTE BINDINGS =====
+            els.pasteClipboardBtn.addEventListener('click', pasteFromClipboardButton);
+
+            // Global paste handler (Ctrl+V / Cmd+V anywhere on page when in scan mode)
+            document.addEventListener('paste', handlePasteEvent);
+
+            // Visual feedback when file scan area is focused/hovered for paste
+            els.fileScanArea.addEventListener('mouseenter', () => {
+                if (currentMode === 'scan') els.fileScanArea.classList.add('paste-active');
+            });
+            els.fileScanArea.addEventListener('mouseleave', () => {
+                els.fileScanArea.classList.remove('paste-active');
+            });
+
+            const fileScanArea = els.fileScanArea;
             fileScanArea.addEventListener('dragover', e => { e.preventDefault(); fileScanArea.style.borderColor = 'var(--primary)'; });
             fileScanArea.addEventListener('dragleave', () => { fileScanArea.style.borderColor = ''; });
             fileScanArea.addEventListener('drop', e => {
